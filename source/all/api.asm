@@ -8706,7 +8706,7 @@ LastResource    dd 0,0
 ;
 PatchTable      dd 16 dup (0)
 ;
-        include loadle\loadle.asm
+        include loadle/loadle.asm
         include decode_c.asm
 
 mcbLastChunk    dd 0
