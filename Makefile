@@ -21,14 +21,14 @@
 # Makefile for GNU make + JWasm to cross-assemble the CauseWay DOS extender
 # with default configuration settings, on a Un*x system.  -- tkchia
 
-MAIN =	source/all/cw32.asm
-SRCS =	$(MAIN) source/all/raw_vcpi.asm source/all/interrup.asm \
-	source/all/ldt.asm source/all/memory.asm source/all/api.asm \
-	source/all/int10h.asm source/all/int21h.asm source/all/int33h.asm \
-	source/all/decode_c.asm source/all/exceptn.asm \
-	source/all/loadle/loadle.asm
-INCS =	source/all/strucs.inc source/all/cw.inc
-DEPS =	$(SRCS) $(INCS)
+CWMAIN = source/all/cw32.asm
+CWSRCS = $(CWMAIN) source/all/raw_vcpi.asm source/all/interrup.asm \
+	 source/all/ldt.asm source/all/memory.asm source/all/api.asm \
+	 source/all/int10h.asm source/all/int21h.asm source/all/int33h.asm \
+	 source/all/decode_c.asm source/all/exceptn.asm \
+	 source/all/loadle/loadle.asm
+CWINCS = source/all/strucs.inc source/all/cw.inc
+CWDEPS = $(CWSRCS) $(CWINCS)
 
 # If we already have JWasm &/or JWlink installed, use those.  Otherwise
 # download & build JWasm &/or JWlink.
@@ -37,7 +37,12 @@ ifneq "" "$(shell jwasm '-?' 2>/dev/null)"
     ASM = jwasm
 else
     ASM = ./jwasm
-    DEPS += $(ASM)
+    CWDEPS += $(ASM)
+endif
+ifneq "" "$(shell jwlink '-?' 2>/dev/null)"
+    LINK = jwlink
+else
+    LINK = ./jwlink
 endif
 RM = rm -f
 
@@ -53,8 +58,8 @@ mostlyclean:
 		 *~ source/all/*~ source/all/loadle/*~
 .PHONY: mostlyclean
 
-cw32.exe: $(DEPS)
-	$(ASM) -mz -DENGLISH=1 -Fo$@.tmp $(MAIN)
+cw32.exe: $(CWDEPS)
+	$(ASM) -mz -DENGLISH=1 -Fo$@.tmp $(CWMAIN)
 	mv $@.tmp $@
 
 ./jwasm:
