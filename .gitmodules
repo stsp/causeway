@@ -1,0 +1,3 @@
+[submodule "JWasm.src"]
+	path = JWasm.src
+	url = https://github.com/Baron-von-Riedesel/JWasm.git
