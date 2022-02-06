@@ -32,6 +32,8 @@ CWSRCS = $(CWMAIN) source/all/raw_vcpi.asm source/all/interrup.asm \
 CWINCS = source/all/strucs.inc source/all/cw.inc
 CWDEPS = $(CWSRCS) $(CWINCS)
 
+CWCDEPS =
+
 # If we already have JWasm &/or JWlink installed, use those.  Otherwise
 # download & build JWasm &/or JWlink.
 GIT = git
@@ -40,6 +42,7 @@ ifneq "" "$(shell jwasm '-?' 2>/dev/null)"
 else
     ASM = ./jwasm
     CWDEPS += $(ASM)
+    CWCDEPS += $(ASM)
 endif
 ifneq "" "$(shell jwlink '-?' 2>/dev/null)"
     LINK = jwlink
@@ -48,7 +51,7 @@ else
 endif
 RM = rm -f
 
-default: cw32.exe
+default: cw32.exe cwstub.exe
 .PHONY: default
 
 clean: mostlyclean
@@ -64,18 +67,32 @@ cw32.exe: $(CWDEPS)
 	$(ASM) -mz -DENGLISH=1 -Fo$@.tmp $(CWMAIN)
 	mv $@.tmp $@
 
+# To compress the CauseWay loader stub, use Watcom's cwc.c, rather than
+# CauseWay's original source/all/cwc/cwc.asm .  The former is written in C
+# and thus is usable even on a non-MS-DOS build machine.
+cwstub.exe: cw32.exe ./cwc
+	./cwc $< $@.tmp
+	mv $@.tmp $@
+.PRECIOUS: cwstub.exe
+
 %.gh: %.com ./mkcode
 	./mkcode -b $< $@.tmp
 	mv $@.tmp $@
 .PRECIOUS: %.gh
 
-%.com: source/all/cwc/%.asm ./jwasm
+%.com: source/all/cwc/%.asm $(CWCDEPS)
 	$(ASM) -bin -Fo$@.tmp $<
 	mv $@.tmp $@
 .PRECIOUS: %.com
 
+./cwc: watcom/cwc.c copystub.gh decstub.gh \
+    watcom/watcom.h watcom/bool.h watcom/exedos.h watcom/pushpck1.h \
+    watcom/poppck.h
+	$(CC) $(CPPFLAGS) -Iwatcom -I. $(CFLAGS) $(LDFLAGS) $< -o $@ $(LDLIBS)
+.PRECIOUS: ./cwc
+
 ./mkcode: watcom/mkcode.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LDLIBS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $< -o $@ $(LDLIBS)
 .PRECIOUS: ./mkcode
 
 ./jwasm:
