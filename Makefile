@@ -21,6 +21,8 @@
 # Makefile for GNU make + JWasm to cross-assemble the CauseWay DOS extender
 # with default configuration settings, on a Un*x system.  -- tkchia
 
+CFLAGS = -O2 -Wall
+
 CWMAIN = source/all/cw32.asm
 CWSRCS = $(CWMAIN) source/all/raw_vcpi.asm source/all/interrup.asm \
 	 source/all/ldt.asm source/all/memory.asm source/all/api.asm \
@@ -50,17 +52,31 @@ default: cw32.exe
 .PHONY: default
 
 clean: mostlyclean
-	$(RM) -r JWasm.build JWlink.build jwasm jwlink
+	$(RM) -r JWasm.build JWlink.build jwasm jwlink 
 .PHONY: clean
 
 mostlyclean:
-	$(RM) -r *.obj *.exe *.map *.err *.tmp \
+	$(RM) -r *.obj *.exe *.com *.gh *.map *.err *.tmp mkcode \
 		 *~ source/all/*~ source/all/loadle/*~
 .PHONY: mostlyclean
 
 cw32.exe: $(CWDEPS)
 	$(ASM) -mz -DENGLISH=1 -Fo$@.tmp $(CWMAIN)
 	mv $@.tmp $@
+
+%.gh: %.com ./mkcode
+	./mkcode -b $< $@.tmp
+	mv $@.tmp $@
+.PRECIOUS: %.gh
+
+%.com: source/all/cwc/%.asm ./jwasm
+	$(ASM) -bin -Fo$@.tmp $<
+	mv $@.tmp $@
+.PRECIOUS: %.com
+
+./mkcode: watcom/mkcode.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LDLIBS)
+.PRECIOUS: ./mkcode
 
 ./jwasm:
 	$(RM) -r JWasm.build
@@ -69,3 +85,4 @@ cw32.exe: $(CWDEPS)
 	$(MAKE) -C JWasm.build -f GccUnix.mak
 	cp JWasm.build/build/GccUnixR/jwasm $@.tmp
 	mv $@.tmp $@
+.PRECIOUS: ./jwasm

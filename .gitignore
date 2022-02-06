@@ -1,8 +1,12 @@
 *.obj
 *.exe
+*.com
+*.gh
 *.map
 *.err
 *.tmp
 *~
 /jwasm
 /JWasm.build
+/jwlink
+/mkcode
