@@ -59,7 +59,7 @@ clean: mostlyclean
 .PHONY: clean
 
 mostlyclean:
-	$(RM) -r *.obj *.exe *.com *.gh *.map *.err *.tmp mkcode \
+	$(RM) -r *.obj *.exe *.com *.gh *.map *.err *.tmp mkcode cwc \
 		 *~ source/all/*~ source/all/loadle/*~
 .PHONY: mostlyclean
 
