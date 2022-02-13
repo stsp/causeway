@@ -22,6 +22,12 @@
 # with default configuration settings, on a Un*x system.  -- tkchia
 
 CFLAGS = -O2 -Wall
+INSTALL = install -c
+prefix ?= /usr
+exec_prefix = $(prefix)/i386-pc-msdos
+bindir = $(exec_prefix)/bin
+exec_prefix2 = $(prefix)/ia16-elf
+bindir2 = $(exec_prefix2)/bin
 
 CWMAIN = source/all/cw32.asm
 CWSRCS = $(CWMAIN) source/all/raw_vcpi.asm source/all/interrup.asm \
@@ -53,6 +59,15 @@ RM = rm -f
 
 default: cw32.exe cwstub.exe
 .PHONY: default
+
+install: cwstub.exe
+	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(bindir2)
+	$(INSTALL) $< $(DESTDIR)$(bindir)
+	$(RM) -f $(DESTDIR)$(bindir2)/cwstub.exe
+	ln -s -r $(DESTDIR)$(bindir)/cwstub.exe \
+	    $(DESTDIR)$(bindir2)/cwstub.exe || \
+	    $(INSTALL) $< $(DESTDIR)$(bindir2)
+.PHONY: install
 
 clean: mostlyclean
 	$(RM) -r JWasm.build JWlink.build jwasm jwlink 
