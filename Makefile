@@ -57,12 +57,12 @@ else
 endif
 RM = rm -f
 
-default: cw32.exe cwstub.exe
+default: cwc cwstub.exe
 .PHONY: default
 
-install: cwstub.exe
+install: cwc cwstub.exe
 	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(bindir2)
-	$(INSTALL) $< $(DESTDIR)$(bindir)
+	$(INSTALL) $^ $(DESTDIR)$(bindir)
 	$(RM) -f $(DESTDIR)$(bindir2)/cwstub.exe
 	ln -s -r $(DESTDIR)$(bindir)/cwstub.exe \
 	    $(DESTDIR)$(bindir2)/cwstub.exe || \
@@ -85,12 +85,12 @@ cw32.exe: $(CWDEPS)
 # To compress the CauseWay loader stub, use Watcom's cwc.c, rather than
 # CauseWay's original source/all/cwc/cwc.asm .  The former is written in C
 # and thus is usable even on a non-MS-DOS build machine.
-cwstub.exe: cw32.exe ./cwc
+cwstub.exe: cw32.exe cwc
 	./cwc $< $@.tmp
 	mv $@.tmp $@
 .PRECIOUS: cwstub.exe
 
-%.gh: %.com ./mkcode
+%.gh: %.com mkcode
 	./mkcode -b $< $@.tmp
 	mv $@.tmp $@
 .PRECIOUS: %.gh
@@ -100,15 +100,15 @@ cwstub.exe: cw32.exe ./cwc
 	mv $@.tmp $@
 .PRECIOUS: %.com
 
-./cwc: watcom/cwc.c copystub.gh decstub.gh \
+cwc: watcom/cwc.c copystub.gh decstub.gh \
     watcom/watcom.h watcom/bool.h watcom/exedos.h watcom/pushpck1.h \
     watcom/poppck.h
 	$(CC) $(CPPFLAGS) -Iwatcom -I. $(CFLAGS) $(LDFLAGS) $< -o $@ $(LDLIBS)
-.PRECIOUS: ./cwc
+.PRECIOUS: cwc
 
-./mkcode: watcom/mkcode.c
+mkcode: watcom/mkcode.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $< -o $@ $(LDLIBS)
-.PRECIOUS: ./mkcode
+.PRECIOUS: mkcode
 
 ./jwasm:
 	$(RM) -r JWasm.build
