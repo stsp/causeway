@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE = 1
+SRCDIR ?= $(abspath .)
+DESTDIR ?= $(abspath debian/causeway-dosx)
+prefix ?= /usr
+
+%:
+	exec dh $@
+
+override_dh_auto_clean:
+	$(MAKE) -C '$(SRCDIR)' clean
+
+override_dh_auto_configure:
+	# Nothing to do here.
+
+override_dh_auto_build:
+	$(MAKE) -C '$(SRCDIR)'
+
+override_dh_auto_test:
+	# Unimplemented.
+
+override_dh_auto_install:
+	$(MAKE) -C '$(SRCDIR)' DESTDIR='$(DESTDIR)' prefix='$(prefix)' install

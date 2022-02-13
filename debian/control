@@ -1,0 +1,15 @@
+Source: causeway-dosx
+Section: devel
+Priority: optional
+Maintainer: TK Chia <tkchia@users.noreply.github.com>
+Build-Depends: debhelper (>= 9), quilt, gcc (>= 4.5), libc6-dev (>= 2), jwasm
+Standards-Version: 3.9.6
+Homepage: https://github.com/tkchia/causeway
+
+Package: causeway-dosx
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: CauseWay DOS extender for MS-DOS on x86-32
+ This package contains a version of Michael Devore's CauseWay DOS extender,
+ which can be used to build applications for MS-DOS that run in x86 protected
+ mode.

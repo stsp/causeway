@@ -63,10 +63,9 @@ default: cwc cwstub.exe
 install: cwc cwstub.exe
 	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(bindir2)
 	$(INSTALL) $^ $(DESTDIR)$(bindir)
-	$(RM) -f $(DESTDIR)$(bindir2)/cwstub.exe
-	ln -s -r $(DESTDIR)$(bindir)/cwstub.exe \
-	    $(DESTDIR)$(bindir2)/cwstub.exe || \
-	    $(INSTALL) $< $(DESTDIR)$(bindir2)
+	$(RM) -r $(^:%=$(DESTDIR)$(bindir2)/%)
+	ln -s -r $(^:%=$(DESTDIR)$(bindir)/%) $(DESTDIR)$(bindir2) || \
+	    $(INSTALL) $^ $(DESTDIR)$(bindir2)
 .PHONY: install
 
 clean: mostlyclean
