@@ -94,7 +94,42 @@ start:	cli
 	;
 	jmp	ss:dword ptr[var_EntryIP]
 
+IFNDEF CONTRIB
 	db 1056 dup (0)
+ELSE
+        ifndef ENGLISH
+ENGLISH equ     0
+        endif
+        ifndef SPANISH
+SPANISH equ     0
+        endif
+
+code_end:
+        db (512-32)-($-start) dup (0)
+
+        ;MS-DOS 1.x rounds the .exe header size up to a 512-byte boundary,
+        ;and will start running the program here.  -- tkchia
+dos1_start:
+        call @@9
+        db "CauseWay error 04 : "
+        if ENGLISH
+        db 'DOS 3.1 or better required.',13,10,'$'
+        elseif SPANISH
+        db "DOS 3.1 o superior requerido.",13,10,"$"
+        endif
+@@9:
+        pop dx
+        push cs
+        pop ds
+        mov ah,9
+        int 21h
+        push es
+        xor ax,ax
+        push ax
+        retf
+
+        db 1056-($-code_end) dup (0)
+ENDIF
 
 	end	start
 

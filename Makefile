@@ -73,12 +73,13 @@ clean: mostlyclean
 .PHONY: clean
 
 mostlyclean:
-	$(RM) -r *.obj *.exe *.com *.gh *.map *.err *.tmp mkcode cwc \
+	$(RM) -r *.obj *.exe *.com *.gh *.map *.lst *.err *.tmp mkcode cwc \
 		 *~ source/all/*~ source/all/loadle/*~
 .PHONY: mostlyclean
 
 cw32.exe: $(CWDEPS)
-	$(ASM) -mz -DENGLISH=1 -Fo$@.tmp $(CWMAIN)
+	$(ASM) -mz -DENGLISH=1 -DCONTRIB=1 -Fo$@.tmp -Fl$(@:.exe=.lst) \
+	    $(CWMAIN)
 	mv $@.tmp $@
 
 # To compress the CauseWay loader stub, use Watcom's cwc.c, rather than
@@ -95,7 +96,7 @@ cwstub.exe: cw32.exe cwc
 .PRECIOUS: %.gh
 
 %.com: source/all/cwc/%.asm $(CWCDEPS)
-	$(ASM) -bin -Fo$@.tmp $<
+	$(ASM) -bin -DENGLISH=1 -DCONTRIB=1 -Fo$@.tmp -Fl$(@:.com=.lst) $<
 	mv $@.tmp $@
 .PRECIOUS: %.com
 
@@ -113,6 +114,7 @@ mkcode: watcom/mkcode.c
 	$(RM) -r JWasm.build
 	$(GIT) submodule update
 	cp -a JWasm.src JWasm.build
+	mkdir -p JWasm.build/build/GccUnixR
 	$(MAKE) -C JWasm.build -f GccUnix.mak
 	cp JWasm.build/build/GccUnixR/jwasm $@.tmp
 	mv $@.tmp $@
