@@ -1,3 +1,9 @@
+causeway-dosx (3.60.001tk-build20220216-1~@distro@) @distro@; urgency=medium
+
+  * Make decompressor stub MS-DOS 1.x compliant.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Wed, 16 Feb 2022 16:46:50 +0000
+
 causeway-dosx (3.60-build20220213-4~@distro@) @distro@; urgency=medium
 
   * Release.
