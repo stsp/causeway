@@ -290,6 +290,57 @@ NewImportModCnt dd 0            ;Number of IMPORT modules.
 NewReserved             db 10 DUP (?)
 NewHeaderStruc  ends
 ;
+IFDEF CONTRIB
+; Ralf Brown's Interrupt List, specifically under int 0x31, ax = 0xff24
+; (see https://www.delorie.com/djgpp/doc/rbinter/id/46/59.html, https://www
+; .delorie.com/djgpp/doc/rbinter/it/63/31.html, etc.), lists the meanings of
+; some of the fields in a CauseWay "3P" header.  However, the description is
+; incomplete & in some places not quite correct.
+;
+; On NewSize:
+;   This is not the "size of header data in bytes" as RBIL claims, but
+;   rather the size of this particular 3P module.  If a program file
+;   contains several 3P modules, CauseWay can use this field value to
+;   quickly move from one module to the next.
+;
+; On NewFlags:
+;   RBIL lists the meanings of some of the executable control flags in a
+;   CauseWay "3P" program header:
+;     "	Bit(s)	Description
+;	 0	16-bit interrupt stack frame
+;	 7	descriptor table type (0 = GDT, 1 = LDT)
+;	 14	16-bit default data size
+;	 31	compressed EXE image"
+;	Note:	bits 0 and 14 should always be equal"
+;   CauseWay copies these flags into the variables SystemFlags &
+;   RawSystemFlags when it loads a 3P program.
+;
+;   CauseWay does use some other bits in SystemFlags & RawSystemFlags.
+;   Unfortunately the source code does not assign names to these bits, so we
+;   must try to guess at their meanings, as follows...
+;
+;   These flags can be set by the programmer in the 3P header:
+;	Bit(s)	Description
+;	 16	"dual mode" --- allow program to run under either a 16-bit
+;		DPMI host or a 32-bit DPMI host; if the bitness given in bit
+;		0 does not work, CauseWay will try to flip bit 0
+;
+;   These flags are internally set by CauseWay:
+;	Bit(s)	Description
+;	 1	VMM present, i.e. page fault handler installed
+;	 2--3	type of protected mode environment in use (set from
+;		the ProtectedType variable)
+;	 4	whether underlying system supports DPMI
+;	 5	whether underlying system supports VCPI
+;	 6	whether underlying system supports raw protected mode
+;		(bits 4--6 are set from the ProtectedFlags variable)
+;	 15	basic protected mode environment has been set up
+;
+; On NewAutoDS etc.:
+;   For some reason (?), RBIL claims there is a "length of name" field here.
+;
+;	-- tkchia March 2022
+ENDIF
 
 
 PSP_Struc               struc
