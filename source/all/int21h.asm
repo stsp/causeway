@@ -707,7 +707,12 @@ Int21hAllocMem  proc    near
 @@AllocOK:      shr     ebx,4           ;convert to paragraphs free.
         mov     [ebp+Int_BX],ax
         DOS4GExtend w[ebp+Int_EBX+2]
+IFDEF CONTRIB
+        mov     w[ebp+Int_AX],8         ;assume error is "insufficient memory"
+        mov     al,1
+ELSE
         mov     w[ebp+Int_AX],1
+ENDIF
         DOS4GExtend w[ebp+Int_EAX+2]
         call    Int21hAL2Carry  ;Set carry.
         ret
@@ -725,6 +730,15 @@ Int21hRelMem    proc    near
         mov     fs,[ebp+Int_FS]
         mov     gs,[ebp+Int_GS]
         sys     RelMem
+IFDEF CONTRIB
+	jnc	@@OK
+	mov	w[ebp+Int_AX],9         ;assume error is "memory block
+                                        ;address invalid"
+	DOS4GExtend w[ebp+Int_EAX+2]
+        mov     al,1
+        call    Int21hAL2Carry
+@@OK:
+ENDIF
         mov     [ebp+Int_DS],ds
         mov     [ebp+Int_ES],es
         mov     [ebp+Int_FS],fs
@@ -745,10 +759,19 @@ Int21hResMem    proc    near
         mov     cx,bx
         mov     bx,[ebp+Int_ES]
         sys     ResMem
+IFDEF CONTRIB
+        jnc     @@OK
+        mov     w[ebp+Int_AX],8         ;assume error is "insufficient memory"
+        DOS4GExtend w[ebp+Int_EAX+2]
+        mov     al,1
+        call    Int21hAL2Carry  ;Set carry.
+@@OK:
+ELSE
         pushf
         pop     ax
         and     al,1
         call    Int21hAL2Carry  ;Set carry.
+ENDIF
         ret
 Int21hResMem    endp
 
