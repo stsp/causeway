@@ -39,7 +39,10 @@ _cwMain segment para public 'Main thread' use16
 Copyright       label byte
         db 'CauseWay DOS Extender v'
 VersionMajor    db '3.'
-VersionMinor    db '60'
+VersionMinor    db '61'
+IFDEF CONTRIB
+VersionDevelBranch db 'tk'
+ENDIF
         db " No copyright. Public domain. MED.",13,10,"No rights retained. ",13,10,0
 
 
@@ -653,6 +656,7 @@ NewCWErrName    DB      81 DUP (0)
 DOS4GFlag       db 0
 ;
 ;*** MED change for Michael Devore name
+IFNDEF CONTRIB
 CopyCheck       label byte
         db 'C'-44,'a'-44,'u'-44,'s'-44,'e'-44,'W'-44,'a'-44,'y'-44,' '-44
         db 'D'-44,'O'-44,'S'-44,' '-44,'E'-44,'x'-44,'t'-44,'e'-44,'n'-44
@@ -665,6 +669,7 @@ CopyCheck       label byte
         db ' '-44,'r'-44,'i'-44,'g'-44,'h'-44,'t'-44,'s'-44,' '-44,'r'-44
         db 'e'-44,'s'-44,'e'-44,'r'-44,'v'-44,'e'-44,'d'-44,'.'-44,13-44,10-44
 CopyCount       dw 0
+ENDIF
 ;
 Int21Buffer     db size RealRegsStruc dup (?)
 Int10Buffer     db size RealRegsStruc dup (?)
@@ -3034,6 +3039,13 @@ medpre2:
         sub     al,'0'
         add     al,ah
         mov     es:cwMinorVersion,al
+IFDEF CONTRIB
+        mov     ax,w[VersionDevelBranch]
+        and     ax,1F1Fh
+        shl     al,3
+        shr     ax,3
+        mov     es:cwDevelBranch,ax
+ENDIF
         assume es:nothing
         assume ds:_cwInit
         popm    ds,es

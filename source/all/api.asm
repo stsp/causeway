@@ -73,6 +73,9 @@ __0:    ;
 ;
 ;This must be just before cwAPIpatch
 ;
+IFDEF CONTRIB
+cwDevelBranch   dw 0
+ENDIF
 cwIdentity      db "CAUSEWAY"
 cwMajorVersion  db 0
 cwMinorVersion  db 0
