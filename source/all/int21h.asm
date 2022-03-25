@@ -683,19 +683,21 @@ Int21hGetCurDir endp
 ;
 Int21hAllocMem  proc    near
         cmp     bx,-1           ;maximum free check?
-        jz      @@AllocMuch
+        jz      AllocMuch
         movzx   ebx,bx
         shl     ebx,4           ;convert paragraphs to bytes.
         mov     dx,bx
         shr     ebx,16
         mov     cx,bx
         sys     GetMem          ;try to allocate memory.
-        jc      @@AllocMuch             ;report how much free then.
+        jc      AllocMuch             ;report how much free then.
         mov     [ebp+Int_AX],bx ;get the selector allocated.
         DOS4GExtend w[ebp+Int_EAX+2]
         ret
+Int21hAllocMem  endp
         ;
-@@AllocMuch:    mov     cx,-1
+AllocMuch       proc    near
+        mov     cx,-1
         mov     dx,-1
         sys     GetMem          ;get free memory size.
         mov     bx,cx
@@ -716,7 +718,7 @@ ENDIF
         DOS4GExtend w[ebp+Int_EAX+2]
         call    Int21hAL2Carry  ;Set carry.
         ret
-Int21hAllocMem  endp
+AllocMuch       endp
 
 
 ;------------------------------------------------------------------------------
@@ -753,26 +755,45 @@ Int21hRelMem    endp
 ;
 Int21hResMem    proc    near
         movzx   ebx,w[ebp+Int_BX]
+IFDEF CONTRIB
+        cmp     bx,-1           ;handle special case of checking maximum
+        jz      @@Much
+ENDIF
         shl     ebx,4           ;convert paragraphs to bytes.
         mov     dx,bx
         shr     ebx,16
         mov     cx,bx
         mov     bx,[ebp+Int_ES]
         sys     ResMem
-IFDEF CONTRIB
-        jnc     @@OK
-        mov     w[ebp+Int_AX],8         ;assume error is "insufficient memory"
-        DOS4GExtend w[ebp+Int_EAX+2]
-        mov     al,1
-        call    Int21hAL2Carry  ;Set carry.
-@@OK:
-ELSE
+IFNDEF CONTRIB
         pushf
         pop     ax
         and     al,1
         call    Int21hAL2Carry  ;Set carry.
-ENDIF
         ret
+ELSE
+        jnc     @@Done
+@@Much:
+        call    AllocMuch       ;reallocation failed; try to get maximum
+        mov     bx,[ebp+Int_BX] ;amount of free memory left (this will also
+                                ;set CF = 1 and ax = 8 on return)
+        cmp     bx,-2           ;if we still have lots of memory left, say so
+        jz      @@Done
+        mov     dx,bx           ;otherwise, we should also be able to
+        mov     bx,[ebp+Int_ES] ;"reallocate" an existing block to its
+        sys     GetSelDet32     ;current size
+        jc      @@Bad           ;FIXME #1: this assumes the limit correctly
+        inc     ecx             ;reflects the block size
+        shr     ecx,4           ;FIXME #2: this does not account for any
+        cmp     bx,cx           ;free MCB immediately after this block
+        ja      @@Done
+        mov     w[ebp+Int_BX],cx
+@@Done:
+        ret
+@@Bad:
+        mov     w[ebp+Int_AX],9 ;set ax = 9 "mem. blk. addr. invalid" on return
+        ret                     ;if selector was invalid
+ENDIF
 Int21hResMem    endp
 
 

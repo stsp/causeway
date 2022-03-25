@@ -39,9 +39,9 @@ _cwMain segment para public 'Main thread' use16
 Copyright       label byte
         db 'CauseWay DOS Extender v'
 VersionMajor    db '3.'
-VersionMinor    db '61'
+VersionMinor    db '62'
 IFDEF CONTRIB
-VersionDevelBranch db 'tk'
+VersionDevelFork db 'tk'
 ENDIF
         db " No copyright. Public domain. MED.",13,10,"No rights retained. ",13,10,0
 
@@ -3040,11 +3040,12 @@ medpre2:
         add     al,ah
         mov     es:cwMinorVersion,al
 IFDEF CONTRIB
-        mov     ax,w[VersionDevelBranch]
-        and     ax,1F1Fh
+        mov     eax,d[VersionDevelFork]
+        and     eax,1F1F1Fh
         shl     al,3
-        shr     ax,3
-        mov     es:cwDevelBranch,ax
+        shl     ax,3
+        shr     eax,6
+        mov     es:cwDevelFork,ax
 ENDIF
         assume es:nothing
         assume ds:_cwInit
