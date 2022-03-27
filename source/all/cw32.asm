@@ -39,9 +39,11 @@ _cwMain segment para public 'Main thread' use16
 Copyright       label byte
         db 'CauseWay DOS Extender v'
 VersionMajor    db '3.'
-VersionMinor    db '62'
 IFDEF CONTRIB
+VersionMinor    db '62'
 VersionDevelFork db 'tk'
+ELSE
+VersionMinor    db '60'
 ENDIF
         db " No copyright. Public domain. MED.",13,10,"No rights retained. ",13,10,0
 
