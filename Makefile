@@ -34,14 +34,20 @@ CWSRCS = $(CWMAIN) source/all/raw_vcpi.asm source/all/interrup.asm \
 	 source/all/ldt.asm source/all/memory.asm source/all/api.asm \
 	 source/all/int10h.asm source/all/int21h.asm source/all/int33h.asm \
 	 source/all/decode_c.asm source/all/exceptn.asm \
-	 source/all/loadle/loadle.asm
-CWINCS = source/all/strucs.inc source/all/cw.inc
-CWDEPS = $(CWSRCS) $(CWINCS)
+	 source/all/loadle/loadle.asm \
+	 source/all/strucs.inc source/all/cw.inc
+CWDEPS = $(CWSRCS)
 
 CWCDEPS =
 
-# If we already have JWasm &/or JWlink installed, use those.  Otherwise
-# download & build JWasm &/or JWlink.
+CWLMAIN	= source/all/cwl/cwl.asm
+CWLOBJ	= $(CWLMAIN:.asm=.o)
+CWLSRCS	= $(CWLMAIN) source/all/cwl/cwl.inc
+CWLDEPS	= $(CWLSRCS)
+
+# If we already have JWasm &/or the Watcom Linker (wlink) &/or JWlink
+# installed, use those.  Otherwise, download & build JWasm & JWlink.
+# JWlink is used for bootstrapping the CauseWay Linker (TODO).
 GIT = git
 ifneq "" "$(shell jwasm '-?' 2>/dev/null)"
     ASM = jwasm
@@ -49,15 +55,21 @@ else
     ASM = ./jwasm
     CWDEPS += $(ASM)
     CWCDEPS += $(ASM)
+    CWLDEPS += $(ASM)
 endif
-ifneq "" "$(shell jwlink '-?' 2>/dev/null)"
+ifneq "" "$(shell wlink '-?' 2>/dev/null </dev/null)"
+    LINK = wlink
+else
+ifneq "" "$(shell jwlink '-?' 2>/dev/null </dev/null)"
     LINK = jwlink
 else
     LINK = ./jwlink
+    CWLDEPS += $(LINK)
+endif
 endif
 RM = rm -f
 
-default: cwc cwstub.exe
+default: cwc cwstub.exe cwl-pre.exe
 .PHONY: default
 
 install: cwc cwstub.exe
@@ -90,6 +102,17 @@ cwstub.exe: cw32.exe cwc
 	mv $@.tmp $@
 .PRECIOUS: cwstub.exe
 
+cwl-pre.exe: $(CWLOBJ) cwstub.exe
+	$(LINK) format os2 le op stub=cwstub.exe file $< name $@.tmp
+	mv $@.tmp $@
+
+$(CWLOBJ): $(CWLMAIN) $(CWLDEPS)
+
+%.o: %.asm
+	$(ASM) -DENGLISH=1 -DCONTRIB=1 -Fo$@.tmp -Fl$(@:.o=.lst) $<
+	mv $@.tmp $@
+.PRECIOUS: %.o
+
 %.gh: %.com mkcode
 	./mkcode -b $< $@.tmp
 	mv $@.tmp $@
@@ -112,10 +135,30 @@ mkcode: watcom/mkcode.c
 
 ./jwasm:
 	$(RM) -r JWasm.build
-	$(GIT) submodule update
+	$(GIT) submodule update --init
 	cp -a JWasm.src JWasm.build
 	mkdir -p JWasm.build/build/GccUnixR
 	$(MAKE) -C JWasm.build -f GccUnix.mak
 	cp JWasm.build/build/GccUnixR/jwasm $@.tmp
 	mv $@.tmp $@
 .PRECIOUS: ./jwasm
+
+# JWlink does not work properly yet, unless long is 32-bit, & pointers are
+# at most 32 bits...
+./jwlink : export CC := $(CC) -O2 -static $(shell \
+	if (echo '#ifdef __LP64__'; echo '#error'; echo '#endif') | \
+	    $(CC) -E -dM -x c - -o /dev/null >/dev/null 2>/dev/null; \
+		then :; \
+		else echo ' -m32'; \
+	fi)
+
+./jwlink:
+	$(RM) -r JWlink.build
+	$(GIT) submodule update --init
+	cp -a JWlink.src JWlink.build
+	$(MAKE) -C JWlink.build/dwarf/dw -f GccUnix.mak
+	$(MAKE) -C JWlink.build/orl -f GccUnix.mak
+	$(MAKE) -C JWlink.build/sdk/rc/wres -f GccUnix.mak
+	$(MAKE) -C JWlink.build -f GccUnix.mak
+	cp JWlink.build/GccUnixR/jwlink $@.tmp
+	mv $@.tmp $@

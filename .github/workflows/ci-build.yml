@@ -36,6 +36,6 @@ jobs:
           sudo add-apt-repository -y ppa:tkchia/de-rebus \
            || sudo apt-key add tests/ppa-pub-key.gpg.bin
           sudo apt-get update -y
-          sudo apt-get install -y jwasm make
+          sudo apt-get install -y jwasm jwlink make
       - name: build
         run: make
