@@ -1,3 +1,11 @@
+causeway-dosx (3.63tk-build20220331-3~@distro@) @distro@; urgency=medium
+
+  * Tweak MS-DOS 1.x hack in decompressor stub, to work even when stub's
+    .exe header has been rewritten by the Watcom Linker.
+  * Build CauseWay Linker with the help of dosbox or dosemu2.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Fri, 31 Mar 2022 18:39:58 +0000
+
 causeway-dosx (3.62tk-build20220325-1~@distro@) @distro@; urgency=medium
 
   * Internal tweaks for CauseWay version number handling.

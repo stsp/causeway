@@ -1,8 +1,10 @@
+*.o
 *.obj
 *.exe
 *.com
 *.gh
 *.map
+*.sym
 *.lst
 *.err
 *.tmp

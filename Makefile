@@ -69,10 +69,32 @@ endif
 endif
 RM = rm -f
 
-default: cwc cwstub.exe cwl-pre.exe
+# If dosemu is installed, then use it to run CauseWay programs.  (Assume
+# dosemu version >= 2.)  Otherwise, use dosbox.
+#
+# In the future it might be useful to have some sort of loader that can
+# directly launch protected mode code from U*ix systems.
+ifneq "" "$(shell dosemu --version)"
+    run-dos = TERM=vt220 dosemu -td -K . -E "$1"
+else
+    run-dos = TERM=vt220 dosbox -c 'mount c .' -c 'c:' -c "$1" -c exit \
+				>/dev/null
+endif
+comma = ,
+# dosbox creates files with upper-case file names.  Work around this by
+# frst creating empty target files with the correct case before linking. :-|
+define cw-link
+	: >"$4"
+	: >"$5"
+	$(call run-dos,$(subst /,\\,$1) $2 \
+		       $(subst /,\\,$3$(comma)$4$(comma)$5))
+	test -s "$4" || ($(RM) "$4" "$5" && exit 1)
+endef
+
+default: cwc cwstub.exe cwl.exe
 .PHONY: default
 
-install: cwc cwstub.exe
+install: cwc cwstub.exe cwl.exe
 	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(bindir2)
 	$(INSTALL) $^ $(DESTDIR)$(bindir)
 	$(RM) -r $(^:%=$(DESTDIR)$(bindir2)/%)
@@ -85,8 +107,9 @@ clean: mostlyclean
 .PHONY: clean
 
 mostlyclean:
-	$(RM) -r *.obj *.exe *.com *.gh *.map *.lst *.err *.tmp mkcode cwc \
-		 *~ source/all/*~ source/all/loadle/*~
+	$(RM) -r *.o *.obj *.exe *.com *.gh *.map *.sym *.lst *.err *.tmp \
+		 mkcode cwc *~ source/all/*~ source/all/*/*.o \
+		 source/all/loadle/*~
 .PHONY: mostlyclean
 
 cw32.exe: $(CWDEPS)
@@ -102,9 +125,13 @@ cwstub.exe: cw32.exe cwc
 	mv $@.tmp $@
 .PRECIOUS: cwstub.exe
 
+cwl.exe: cwl-pre.exe $(CWLOBJ)
+	$(call cw-link,$<,/flat,$(CWLOBJ),$@,$(@:.exe=.map))
+
 cwl-pre.exe: $(CWLOBJ) cwstub.exe
 	$(LINK) format os2 le op stub=cwstub.exe file $< name $@.tmp
 	mv $@.tmp $@
+.PRECIOUS: cwl-pre.exe
 
 $(CWLOBJ): $(CWLMAIN) $(CWLDEPS)
 

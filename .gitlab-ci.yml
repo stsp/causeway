@@ -35,5 +35,5 @@ test:
     - apt-get install -y software-properties-common
     - add-apt-repository -y ppa:tkchia/de-rebus
     - apt-get update -y
-    - apt-get install -y gcc jwasm jwlink make git gcc-multilib
+    - apt-get install -y gcc jwasm jwlink make dosbox
   script: make
