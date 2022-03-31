@@ -105,11 +105,18 @@ SPANISH equ     0
         endif
 
 code_end:
-        db (512-32)-($-start) dup (0)
+        db (512-64)-($-start) dup (0)
 
         ;MS-DOS 1.x rounds the .exe header size up to a 512-byte boundary,
-        ;and will start running the program here.  -- tkchia
-dos1_start:
+        ;and will start running the program either at dos1_start_1 or
+        ;dos1_start_2.  dos_start_1 might be triggered when the Watcom
+        ;Linker rewrites the DOS extender stub to have a 64-byte .exe header.
+        ;-- tkchia
+dos1_start_1:
+        jmp dos1_start_2
+        db (512-32)-($-start) dup (0)
+
+dos1_start_2:
         call @@9
         db "CauseWay error 04 : "
         if ENGLISH
