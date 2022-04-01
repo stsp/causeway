@@ -50,6 +50,9 @@ Copyright	db 13,10
 ;
 ;Main entry point from default startup code.
 ;
+IFDEF CONTRIB
+	public	_Main
+ENDIF
 _Main	proc	near
 	mov	ErrorStack,esp	;Store the stack so it can be
 	;			;retrieved for error processing.
@@ -577,7 +580,7 @@ medexe2:
 	mov	eax,@@CompLen
 	add	eax,15
 	and	eax,not 15
-	mov	ebx,size EXEDecStubLen
+	mov	ebx,EXEDecStubLen
 	add	ebx,15
 	and	ebx,not 15
 	add	eax,ebx
@@ -2948,7 +2951,7 @@ DummyData	db 16 dup (0)
 EXEextension	db 'EXE',0
 
 CodeHeads	dd 0
-CodeFree	dd ?,0
+CodeFree	dd 0,0
 CodeLast	dd ?
 CodeCount	dd ?
 CodePos	dd ?

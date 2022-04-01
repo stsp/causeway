@@ -82,7 +82,7 @@ else
 endif
 comma = ,
 # dosbox creates files with upper-case file names.  Work around this by
-# frst creating empty target files with the correct case before linking. :-|
+# first creating empty target files with the correct case before linking. :-|
 define cw-link
 	: >"$4"
 	: >"$5"
@@ -90,11 +90,19 @@ define cw-link
 		       $(subst /,\\,$3$(comma)$4$(comma)$5))
 	test -s "$4" || ($(RM) "$4" "$5" && exit 1)
 endef
+define cw-compress
+	cp "$3" "$4"
+	$(call run-dos,$(subst /,\\,$1) $2 $(subst /,\\,$4))
+	test -s "$4" -a "`LC_ALL=C wc -c <$4`" -lt "`LC_ALL=C wc -c <$3`" || \
+	    ($(RM) "$4" && exit 1)
+endef
 
-default: cwc cwstub.exe cwl.exe
+# Various phony targets.
+
+default: cwc-wat cwstub.exe cwl.exe
 .PHONY: default
 
-install: cwc cwstub.exe cwl.exe
+install: cwc-wat cwstub.exe cwl.exe
 	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(bindir2)
 	$(INSTALL) $^ $(DESTDIR)$(bindir)
 	$(RM) -r $(^:%=$(DESTDIR)$(bindir2)/%)
@@ -108,32 +116,11 @@ clean: mostlyclean
 
 mostlyclean:
 	$(RM) -r *.o *.obj *.exe *.com *.gh *.map *.sym *.lst *.err *.tmp \
-		 mkcode cwc *~ source/all/*~ source/all/*/*.o \
-		 source/all/loadle/*~
+		 mkcode cwc-wat copystub.inc decstub.inc *~ source/all/*~ \
+		 source/all/*/*.o source/all/*/*~
 .PHONY: mostlyclean
 
-cw32.exe: $(CWDEPS)
-	$(ASM) -mz -DENGLISH=1 -DCONTRIB=1 -Fo$@.tmp -Fl$(@:.exe=.lst) \
-	    $(CWMAIN)
-	mv $@.tmp $@
-
-# To compress the CauseWay loader stub, use Watcom's cwc.c, rather than
-# CauseWay's original source/all/cwc/cwc.asm .  The former is written in C
-# and thus is usable even on a non-MS-DOS build machine.
-cwstub.exe: cw32.exe cwc
-	./cwc $< $@.tmp
-	mv $@.tmp $@
-.PRECIOUS: cwstub.exe
-
-cwl.exe: cwl-pre.exe $(CWLOBJ)
-	$(call cw-link,$<,/flat,$(CWLOBJ),$@,$(@:.exe=.map))
-
-cwl-pre.exe: $(CWLOBJ) cwstub.exe
-	$(LINK) format os2 le op stub=cwstub.exe file $< name $@.tmp
-	mv $@.tmp $@
-.PRECIOUS: cwl-pre.exe
-
-$(CWLOBJ): $(CWLMAIN) $(CWLDEPS)
+# Various pattern rules.
 
 %.o: %.asm
 	$(ASM) -DENGLISH=1 -DCONTRIB=1 -Fo$@.tmp -Fl$(@:.o=.lst) $<
@@ -145,12 +132,51 @@ $(CWLOBJ): $(CWLMAIN) $(CWLDEPS)
 	mv $@.tmp $@
 .PRECIOUS: %.gh
 
+%.inc: %.gh
+	sed 's/0x\(..\),/0\1h,/g; s/^/db /; s/,$$//' $< >$@.tmp
+	mv $@.tmp $@
+.PRECIOUS: %.inc
+
 %.com: source/all/cwc/%.asm $(CWCDEPS)
 	$(ASM) -bin -DENGLISH=1 -DCONTRIB=1 -Fo$@.tmp -Fl$(@:.com=.lst) $<
 	mv $@.tmp $@
 .PRECIOUS: %.com
 
-cwc: watcom/cwc.c copystub.gh decstub.gh \
+# Rule to build an uncompressed CauseWay loader stub.
+cw32.exe: $(CWDEPS)
+	$(ASM) -mz -DENGLISH=1 -DCONTRIB=1 -Fo$@.tmp -Fl$(@:.exe=.lst) \
+	    $(CWMAIN)
+	mv $@.tmp $@
+.PRECIOUS: cw32.exe
+
+# Rule to build a compressed CauseWay loader stub.
+#
+# To compress the loader stub, use Watcom's cwc.c, rather than CauseWay's
+# original source/all/cwc/cwc.asm .  The former is written in C and thus is
+# usable even on a non-MS-DOS build machine.
+cwstub.exe: cw32.exe cwc-wat
+	./cwc-wat $< $@.tmp
+	mv $@.tmp $@
+.PRECIOUS: cwstub.exe
+
+# Rules to build the CauseWay linker.  Use JWlink or wlink to build a
+# stage-1 linker (cwl-pre.exe) which will contain a Linear Executable (LE)
+# payload, then use that to build the final linker which wil contain a 3P
+# payload.
+cwl.exe: cwl-pre.exe $(CWLOBJ)
+	$(call cw-link,$<,/flat,$(CWLOBJ),$@,$(@:.exe=.map))
+.PRECIOUS: cwl.exe
+
+cwl-pre.exe: $(CWLOBJ) cwstub.exe
+	$(LINK) format os2 le op stub=cwstub.exe file $< name $@.tmp
+	mv $@.tmp $@
+.PRECIOUS: cwl-pre.exe
+
+$(CWLOBJ): $(CWLMAIN) $(CWLDEPS)
+
+# Rules to build Watcom's rewrite of the CauseWay Compressor.  This is
+# apparently only useful for compressing the stub.
+cwc-wat: watcom/cwc.c copystub.gh decstub.gh \
     watcom/watcom.h watcom/bool.h watcom/exedos.h watcom/pushpck1.h \
     watcom/poppck.h
 	$(CC) $(CPPFLAGS) -Iwatcom -I. $(CFLAGS) $(LDFLAGS) $< -o $@ $(LDLIBS)
@@ -160,6 +186,20 @@ mkcode: watcom/mkcode.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $< -o $@ $(LDLIBS)
 .PRECIOUS: mkcode
 
+# Rules to build Michael Devore's original CauseWay Compressor.  This can
+# compress the 3P payload & has a number of other features not in Watcom's
+# compressor.
+cwc.exe: cwc-pre.exe
+	$(call cw-compress,cwc-pre.exe,/l245,cwc-pre.exe,cwc.exe)
+.PRECIOUS: cwc.exe
+
+cwc-pre.exe: source/all/cwc/cwc.o cwl.exe
+	$(call cw-link,cwl.exe,/flat,$<,$@,$(@:.exe=.map))
+.PRECIOUS: cwc-medp.exe
+
+source/all/cwc/cwc.o: source/all/cwc/cwc.asm copystub.inc decstub.inc
+
+# Rule to build JWasm.
 ./jwasm:
 	$(RM) -r JWasm.build
 	$(GIT) submodule update --init
@@ -170,8 +210,8 @@ mkcode: watcom/mkcode.c
 	mv $@.tmp $@
 .PRECIOUS: ./jwasm
 
-# JWlink does not work properly yet, unless long is 32-bit, & pointers are
-# at most 32 bits...
+# Rules to build JWlink.  JWlink currently only works properly if long is
+# 32-bit & pointers are at most 32 bits...
 ./jwlink : export CC := $(CC) -O2 -static $(shell \
 	if (echo '#ifdef __LP64__'; echo '#error'; echo '#endif') | \
 	    $(CC) -E -dM -x c - -o /dev/null >/dev/null 2>/dev/null; \
