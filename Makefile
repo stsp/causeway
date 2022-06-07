@@ -202,7 +202,7 @@ source/all/cwc/cwc.o: source/all/cwc/cwc.asm copystub.inc decstub.inc
 # Rule to build JWasm.
 ./jwasm:
 	$(RM) -r JWasm.build
-	$(GIT) submodule update --init
+	$(GIT) submodule update --init JWasm.src
 	cp -a JWasm.src JWasm.build
 	mkdir -p JWasm.build/build/GccUnixR
 	$(MAKE) -C JWasm.build -f GccUnix.mak
@@ -221,7 +221,7 @@ source/all/cwc/cwc.o: source/all/cwc/cwc.asm copystub.inc decstub.inc
 
 ./jwlink:
 	$(RM) -r JWlink.build
-	$(GIT) submodule update --init
+	$(GIT) submodule update --init JWlink.src
 	cp -a JWlink.src JWlink.build
 	$(MAKE) -C JWlink.build/dwarf/dw -f GccUnix.mak
 	$(MAKE) -C JWlink.build/orl -f GccUnix.mak
