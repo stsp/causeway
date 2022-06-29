@@ -1,3 +1,10 @@
+causeway-dosx (3.63tk-build20220629-2~@distro@) @distro@; urgency=medium
+
+  * Try to build Michael Devore's CauseWay Compressor.
+  * Fix: race condition from concurrent `git submodule update --init`.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Wed, 29 Jun 2022 20:07:31 +0000
+
 causeway-dosx (3.63tk-build20220331-3~@distro@) @distro@; urgency=medium
 
   * Tweak MS-DOS 1.x hack in decompressor stub, to work even when stub's
