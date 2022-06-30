@@ -382,6 +382,9 @@ Int21hCreateDIR proc near
         call    Int21hExtend_DS_ESI     ;Extend [E]SI.
         xor     al,al           ;Character to look for.
         call    Int21hStringLen ;Get length of this string.
+IFDEF CONTRIB
+        jc      Int21hBadPath
+ENDIF
         mov     es,fs:[EPSP_TransProt]
         xor     edi,edi
         inc     ecx             ;Include terminator.
@@ -407,6 +410,22 @@ Int21hCreateDIR proc near
         ret
 Int21hCreateDIR endp
 
+IFDEF CONTRIB
+;------------------------------------------------------------------------------
+;
+;Routine to return an error when a file path is too long to fit in the
+;transfer buffer.
+;
+Int21hBadPath proc near
+        mov     al,1
+        call    Int21hAL2Carry
+        mov     ax,0A0h                 ;"bad arguments"
+        mov     [ebp+Int_AX],ax
+        DOS4GExtend w[ebp+Int_EAX+2]
+        ret
+Int21hBadPath endp
+ENDIF
+
 
 ;------------------------------------------------------------------------------
 ;
@@ -421,6 +440,9 @@ Int21hCreateFile proc near
         call    Int21hExtend_DS_ESI     ;Extend [E]SI.
         xor     al,al           ;Character to look for.
         call    Int21hStringLen ;Get length of this string.
+IFDEF CONTRIB
+        jc      Int21hBadPath
+ENDIF
         mov     es,fs:[EPSP_TransProt]
         xor     edi,edi
         inc     ecx             ;Include terminator.
@@ -465,6 +487,9 @@ Int21hOpenFile  proc    near
         call    Int21hExtend_DS_ESI     ;Extend [E]SI.
         xor     al,al           ;Character to look for.
         call    Int21hStringLen ;Get length of this string.
+IFDEF CONTRIB
+        jc      Int21hBadPath
+ENDIF
         mov     es,fs:[EPSP_TransProt]
         xor     edi,edi
         inc     ecx             ;Include terminator.
@@ -668,6 +693,9 @@ Int21hGetCurDir proc near
         xor     esi,esi
         xor     al,al           ;Character to look for.
         call    Int21hStringLen ;Get length of this string.
+IFDEF CONTRIB
+        jc      Int21hBadPath
+ENDIF
         inc     ecx
         mov     es,[ebp+Int_DS]
         mov     edi,[ebp+Int_ESI]
@@ -814,6 +842,9 @@ Int21hExecFile  proc    near
         call    Int21hExtend_DS_ESI     ;Extend [E]SI.
         xor     al,al
         call    Int21hStringLen ;Get length of this string.
+IFDEF CONTRIB
+        jc      Int21hBadPath
+ENDIF
         inc     ecx
         mov     es,fs:[EPSP_TransProt]
         xor     edi,edi
@@ -1074,6 +1105,9 @@ Int21hFindFirstFile proc near
         call    Int21hExtend_DS_ESI     ;Extend [E]SI.
         xor     al,al           ;Character to look for.
         call    Int21hStringLen ;Get length of this string.
+IFDEF CONTRIB
+        jc      Int21hBadPath
+ENDIF
         inc     ecx             ;Include terminator.
         mov     es,fs:[EPSP_TransProt]
         xor     edi,edi
@@ -1175,6 +1209,9 @@ Int21hRenameFile proc near
         call    Int21hExtend_DS_ESI     ;Extend [E]SI.
         xor     al,al           ;Character to look for.
         call    Int21hStringLen ;Get length of this string.
+IFDEF CONTRIB
+        jc      Int21hBadPath
+ENDIF
         inc     ecx
         mov     es,fs:[EPSP_TransProt]
         xor     edi,edi
@@ -1187,6 +1224,12 @@ Int21hRenameFile proc near
         call    Int21hExtend_DS_ESI     ;Extend [E]SI.
         xor     al,al           ;Character to look for.
         call    Int21hStringLen ;Get length of this string.
+IFDEF CONTRIB
+        jc      Int21hBadPath
+        lea     edx,[edi+ecx]
+        cmp     edx,fs:[EPSP_TransSize]
+        jnb     Int21hBadPath
+ENDIF
         inc     ecx
         mov     es,fs:[EPSP_TransProt]
         push    edi
@@ -1228,6 +1271,12 @@ Int21hCreateTemp proc near
         call    Int21hExtend_DS_ESI     ;Extend [E]SI.
         xor     al,al           ;Character to look for.
         call    Int21hStringLen ;Get length of this string.
+IFDEF CONTRIB
+        jc      Int21hBadPath
+        lea     edi,[ecx+12]
+        cmp     edi,fs:[EPSP_TransSize]
+        jnb     Int21hBadPath
+ENDIF
         inc     ecx
         mov     es,fs:[EPSP_TransProt]
         xor     edi,edi
@@ -1554,6 +1603,9 @@ Int21hExtendOpen proc near
         call    Int21hExtend_DS_ESI     ;Extend [E]SI.
         xor     al,al
         call    Int21hStringLen
+IFDEF CONTRIB
+        jc      Int21hBadPath
+ENDIF
         inc     ecx
         mov     es,fs:w[EPSP_TransProt]
         xor     edi,edi
@@ -1782,7 +1834,7 @@ Int21hExtend_ES_EDI endp
 
 ;------------------------------------------------------------------------------
 ;
-;Fing length of a string.
+;Find length of a string.
 ;
 ;On Entry:
 ;
@@ -1792,6 +1844,9 @@ Int21hExtend_ES_EDI endp
 ;On Exit:
 ;
 ;ECX    - Length of string EXCLUDEING terminator.
+IFDEF CONTRIB
+;CF     - Set if string too long to fit into transfer buffer.
+ENDIF
 ;
 ;All other registers preserved.
 ;
@@ -1806,6 +1861,10 @@ Int21hStringLen proc near
         sub     ecx,esi
         dec     ecx
         popm    edi,es
+IFDEF CONTRIB
+        cmp     ecx,fs:[EPSP_TransSize]
+        cmc
+ENDIF
         ret
 Int21hStringLen endp
 

@@ -1,3 +1,9 @@
+causeway-dosx (3.64tk-build20220630-1~@distro@) @distro@; urgency=medium
+
+  * Check that int 0x21 file paths do not overflow transfer buffer.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Thu, 30 Jun 2022 14:52:46 +0000
+
 causeway-dosx (3.63tk-build20220629-2~@distro@) @distro@; urgency=medium
 
   * Try to build Michael Devore's CauseWay Compressor.
