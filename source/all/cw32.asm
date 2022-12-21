@@ -4219,10 +4219,14 @@ GetEXECName     proc    near
         inc     si              ;/
         or      al,al           ;End of a string?
         jnz     @@1             ;keep looking.
-        mov     al,es:[si]              ;Double zero?
+        mov     al,es:[si]              ;Double zero or 1 0?
+        cmp     al,1
+        je      @@11
         or      al,al           ;/
         jnz     @@1             ;keep looking.
-        add     si,3            ;Skip last 0 and word count.
+        inc     si
+@@11:
+        add     si,2            ;Skip last 0 and word count.
         mov     di,offset MainExec
         mov     bx,_cwInit
         mov     fs,bx
