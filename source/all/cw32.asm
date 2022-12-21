@@ -832,6 +832,7 @@ chk386:
 ;Retrieve setup info from 3P header.
 ;
         call    GetSystemFlags
+        jc      InitError
 ;
 ;Check if a suitable method for switching to protected mode exists.
 ;
@@ -4279,7 +4280,7 @@ GetSystemFlags  proc    near
         mov     cx,1bh          ;size of it.
         mov     ah,3fh
         int     21h
-        jc      @@4
+        jc      @@44
         cmp     ax,1bh          ;did we read right amount?
         jnz     @@4
         cmp     w[IExeSignature],'ZM'   ;Normal EXE?
@@ -4308,7 +4309,7 @@ medexe2:
         mov     cx,size NewHeaderStruc  ;size of it.
         mov     ah,3fh
         int     21h
-        jc      @@4
+        jc      @@44
         or      ax,ax           ;end of the file?
         jz      @@SetRUN
         cmp     ax,size NewHeaderStruc  ;did we read right amount?
@@ -4421,8 +4422,13 @@ medexe2:
 @@sr5:  pop     es
         ;
         assume ds:_cwMain
+        clc
 @@5:    pop     ds
         ret
+@@44:   mov     ax,3e00h
+        int     21h
+        stc
+        jmp     @@5
 GetSystemFlags  endp
 
 
