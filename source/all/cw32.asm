@@ -789,6 +789,9 @@ ENDIF
 ;
         mov     RealPSPSegment,es
         mov     ax,es:w[02ch]
+        mov     cs:IErrorNumber,10
+        test    ax,ax                   ;NULL env pointer?
+        jz      toiniterr
         mov     RealEnvSegment,ax       ;Stow ENV for later.
 ;
 ;Re-size memory so we can allocate what we want high.
