@@ -1,8 +1,9 @@
-causeway-dosx (3.65tk-build20221224-2~@distro@) @distro@; urgency=medium
+causeway-dosx (3.65tk-build20221224-3~@distro@) @distro@; urgency=medium
 
   * Check for null environment segment (thanks Stas Sergeev).
+  * Try to build CauseWay debugger.
 
- -- TK Chia <tkchia@users.noreply.github.com>  Sat, 24 Dec 2022 21:15:03 +0000
+ -- TK Chia <tkchia@users.noreply.github.com>  Sat, 24 Dec 2022 21:49:58 +0000
 
 causeway-dosx (3.64tk-build20220630-1~@distro@) @distro@; urgency=medium
 
