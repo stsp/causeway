@@ -789,9 +789,11 @@ ENDIF
 ;
         mov     RealPSPSegment,es
         mov     ax,es:w[02ch]
+IFDEF CONTRIB
         mov     cs:IErrorNumber,10
         test    ax,ax                   ;NULL env pointer?
         jz      toiniterr
+ENDIF
         mov     RealEnvSegment,ax       ;Stow ENV for later.
 ;
 ;Re-size memory so we can allocate what we want high.
@@ -4750,6 +4752,9 @@ IExeOverlayNum  db ?    ;1A Overlay number.
 IErrorNumber    dw 0
 InitErrorList   dw IErrorM00,IErrorM01,IErrorM02,IErrorM03,IErrorM04,IErrorM05,IErrorM06,IErrorM07
         dw IErrorM08,IErrorM09
+IFDEF CONTRIB
+        dw IErrorM10
+ENDIF
 IErrorM00       db 'CauseWay error '
 IErrorM00n      db '00 : $'
 IErrorM01       label byte
@@ -4806,6 +4811,10 @@ IErrorM09       label byte
         elseif SPANISH
         db "DPMI fallo al cambiar a modo protegido.",13,10,"$"
         endif
+IFDEF CONTRIB
+IErrorM10       label byte
+        db 'Null environment.',13,10,'$'
+ENDIF
 ;
 IFDEF PERMNOVM
 NoVMSwitch      db 1
