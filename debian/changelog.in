@@ -1,3 +1,10 @@
+causeway-dosx (3.65t6-build20221225-1~@distro@) @distro@; urgency=medium
+
+  * Bail out early if executable cannot read self (thanks Stas Sergeev for
+    the issue report).
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Sun, 25 Dec 2022 08:50:22 +0000
+
 causeway-dosx (3.65tk-build20221224-3~@distro@) @distro@; urgency=medium
 
   * Check for null environment segment (thanks Stas Sergeev).

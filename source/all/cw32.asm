@@ -40,7 +40,7 @@ Copyright       label byte
         db 'CauseWay DOS Extender v'
 VersionMajor    db '3.'
 IFDEF CONTRIB
-VersionMinor    db '65'
+VersionMinor    db '66'
 VersionDevelFork db 'tk'
 ELSE
 VersionMinor    db '60'
@@ -837,6 +837,10 @@ chk386:
 ;Retrieve setup info from 3P header.
 ;
         call    GetSystemFlags
+IFDEF CONTRIB
+        mov     cs:IErrorNumber,11
+        jc      InitError
+ENDIF
 ;
 ;Check if a suitable method for switching to protected mode exists.
 ;
@@ -4319,7 +4323,12 @@ medexe2:
         cmp     ax,size NewHeaderStruc  ;did we read right amount?
         jnz     @@4
         cmp     w[INewHeader],'P3'      ;ID ok?
+IFDEF CONTRIB
+        jnz     @@6                     ;if not, don't error out immediately;
+                                        ;this may be an LE file (FIXME?)
+ELSE
         jnz     @@4
+ENDIF
         mov     si,offset INewHeader
         mov     ax,w[NewFlags+si]       ;Copy main flags.
         mov     cx,w[NewFlags+2+si]
@@ -4344,10 +4353,22 @@ medexe2:
         assume ds:_apiCode
         mov     w[apiSystemFlags],ax
         mov     w[apiSystemFlags+2],cx
+IFDEF CONTRIB
+@@6:    clc
+        db      0B0h            ;`mov al,...': eat up next opcode, leave flags
+ENDIF
         .286
         assume ds:_cwMain
-@@4:    mov     ax,3e00h
+@@4:
+IFDEF CONTRIB
+        stc
+        pushf
+ENDIF
+        mov     ax,3e00h
         int     21h
+IFDEF CONTRIB
+        popf
+ENDIF
         jmp     @@5
 
 ;
@@ -4424,6 +4445,9 @@ medexe2:
         mov     si,cx
         mov     es:b[si],13             ;Terminate it correctly.
 @@sr5:  pop     es
+IFDEF CONTRIB
+        clc
+ENDIF
         ;
         assume ds:_cwMain
 @@5:    pop     ds
@@ -4753,7 +4777,7 @@ IErrorNumber    dw 0
 InitErrorList   dw IErrorM00,IErrorM01,IErrorM02,IErrorM03,IErrorM04,IErrorM05,IErrorM06,IErrorM07
         dw IErrorM08,IErrorM09
 IFDEF CONTRIB
-        dw IErrorM10
+        dw IErrorM10,IErrorM11
 ENDIF
 IErrorM00       db 'CauseWay error '
 IErrorM00n      db '00 : $'
@@ -4814,6 +4838,8 @@ IErrorM09       label byte
 IFDEF CONTRIB
 IErrorM10       label byte
         db 'Null environment.',13,10,'$'
+IErrorM11       label byte
+        db 'Unable to read self.',13,10,'$'
 ENDIF
 ;
 IFDEF PERMNOVM
