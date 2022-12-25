@@ -123,10 +123,10 @@ endef
 
 # Various phony targets.
 
-default: cwc-wat cwstub.exe cwl.exe cwd.exe cwd.ovl
+default: cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl
 .PHONY: default
 
-install: cwc-wat cwstub.exe cwl.exe cwd.exe cwd.ovl
+install: cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl
 	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(bindir2)
 	$(INSTALL) $^ $(DESTDIR)$(bindir)
 	$(RM) -r $(^:%=$(DESTDIR)$(bindir2)/%)

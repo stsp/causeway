@@ -1,3 +1,9 @@
+causeway-dosx (3.66tk-build20221225-2~@distro@) @distro@; urgency=medium
+
+  * Also install uncompressed CauseWay DOS extender stub.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Sun, 25 Dec 2022 16:52:36 +0000
+
 causeway-dosx (3.66tk-build20221225-1~@distro@) @distro@; urgency=medium
 
   * Bail out early if executable cannot read self (thanks Stas Sergeev for
