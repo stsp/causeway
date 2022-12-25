@@ -1,4 +1,4 @@
-causeway-dosx (3.65t6-build20221225-1~@distro@) @distro@; urgency=medium
+causeway-dosx (3.66tk-build20221225-1~@distro@) @distro@; urgency=medium
 
   * Bail out early if executable cannot read self (thanks Stas Sergeev for
     the issue report).
