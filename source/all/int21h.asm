@@ -952,9 +952,15 @@ ENDIF
         jmp     @@Ef12
 @@Ef10: mov     ds,es:[ebx]             ;get environment segment.
 @@Ef12: push    esi
+IFDEF CONTRIB
+        jmp     @@4                     ;handle special case of empty env.
+ENDIF
 @@3:    lodsb
         or      al,al
         jnz     @@3
+IFDEF CONTRIB
+@@4:
+ENDIF
         cmp     b[esi],0                ;double zero?
         jnz     @@3
         inc     esi

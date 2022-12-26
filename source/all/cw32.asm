@@ -40,7 +40,7 @@ Copyright       label byte
         db 'CauseWay DOS Extender v'
 VersionMajor    db '3.'
 IFDEF CONTRIB
-VersionMinor    db '67'
+VersionMinor    db '68'
 VersionDevelFork db 'tk'
 ELSE
 VersionMinor    db '60'
@@ -4224,10 +4224,16 @@ GetEXECName     proc    near
         .386
 @@0:    mov     es,RealEnvSegment
         xor     si,si
+IFDEF CONTRIB
+        jmp     @@4             ;Handle special case of empty environment
+ENDIF
 @@1:    mov     al,es:[si]              ;Get a byte.
         inc     si              ;/
         or      al,al           ;End of a string?
         jnz     @@1             ;keep looking.
+IFDEF CONTRIB
+@@4:
+ENDIF
         mov     al,es:[si]              ;Double zero?
         or      al,al           ;/
         jnz     @@1             ;keep looking.

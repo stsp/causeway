@@ -1,3 +1,10 @@
+causeway-dosx (3.68tk-build20221226-1~@distro@) @distro@; urgency=medium
+
+  * Fix: handle empty environment arrays with no strings, on program entry,
+    and for int 0x21, ah = 0x4b.  (Thanks Stas Sergeev for the issue report.)
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Mon, 26 Dec 2022 10:34:37 +0000
+
 causeway-dosx (3.67tk-build20221226-1~@distro@) @distro@; urgency=medium
 
   * Use UPX rather than (some version of) the CauseWay Compressor to
