@@ -1,3 +1,10 @@
+causeway-dosx (3.67tk-build20221226-1~@distro@) @distro@; urgency=medium
+
+  * Use UPX rather than (some version of) the CauseWay Compressor to
+    compress the CauseWay loader stub.  This yields a smaller stub.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Mon, 26 Dec 2022 01:35:40 +0000
+
 causeway-dosx (3.66tk-build20221225-2~@distro@) @distro@; urgency=medium
 
   * Also install uncompressed CauseWay DOS extender stub.

@@ -84,6 +84,13 @@ else
     CWLDEPS += $(LINK)
 endif
 endif
+# Use UPX rather than CauseWay's own compressor to compress the CauseWay
+# loader stub, if we can.
+ifneq "" "$(shell upx -V 2>/dev/null)"
+    UPX = upx
+else
+    UPX =
+endif
 RM = rm -f
 
 # If dosemu is installed, then use it to run CauseWay programs.  (Assume
@@ -175,20 +182,36 @@ cw32.exe: $(CWDEPS)
 
 # Rule to build a compressed CauseWay loader stub.
 #
-# To compress the loader stub, use Watcom's cwc.c, rather than CauseWay's
-# original source/all/cwc/cwc.asm .  The former is written in C and thus is
-# usable even on a non-MS-DOS build machine.
+# To compress the loader stub, either
+#   * use UPX if present, or
+#   * use Watcom's cwc.c.
+# CauseWay's original source/all/cwc/cwc.asm may work on DOS systems, but
+# Watcom's cwc.c is written in C and thus is usable even on a non-MS-DOS
+# build machine.  Meanwhile, UPX yields smaller stubs.
+ifneq "" "$(UPX)"
+cwstub.exe: cw32.exe
+	$(UPX) --8086 -9 -o $@.tmp $<
+else
 cwstub.exe: cw32.exe cwc-wat
 	./cwc-wat $< $@.tmp
+endif
 	mv $@.tmp $@
 .PRECIOUS: cwstub.exe
 
 # Rules to build the CauseWay linker.  Use JWlink or wlink to build a
 # stage-1 linker (cwl-pre.exe) which will contain a Linear Executable (LE)
-# payload, then use that to build the final linker which wil contain a 3P
+# payload, then use that to build the final linker which will contain a 3P
 # payload.
-cwl.exe: cwl-pre.exe $(CWLOBJ)
-	$(call cw-link,$<,/flat,$(CWLOBJ),$@,$(@:.exe=.map))
+#
+# We need to manually append the compressed stub to cwl.exe, to avoid using
+# the stub in cwl-pre.exe.  cwl-pre.exe's stub will have been doctored by
+# wlink, & may fail to properly locate the 3P payload.
+cwl.exe: cwl-pre.exe $(CWLOBJ) cwstub.exe
+	$(call cw-link,$<,/flat /nostub,$(CWLOBJ),$(@:.exe=.tmp), \
+		       $(@:.exe=.map))
+	cat cwstub.exe $(@:.exe=.tmp) >$@.tmp
+	mv $@.tmp $@
+	$(RM) $(@:.exe=.tmp)
 .PRECIOUS: cwl.exe
 
 cwl-pre.exe: $(CWLOBJ) cwstub.exe
