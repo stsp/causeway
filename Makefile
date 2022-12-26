@@ -207,8 +207,8 @@ endif
 # the stub in cwl-pre.exe.  cwl-pre.exe's stub will have been doctored by
 # wlink, & may fail to properly locate the 3P payload.
 cwl.exe: cwl-pre.exe $(CWLOBJ) cwstub.exe
-	$(call cw-link,$<,/flat /nostub,$(CWLOBJ),$(@:.exe=.tmp), \
-		       $(@:.exe=.map))
+	$(call cw-link,$<, \
+		       /flat /nostub,$(CWLOBJ),$(@:.exe=.tmp),$(@:.exe=.map))
 	cat cwstub.exe $(@:.exe=.tmp) >$@.tmp
 	mv $@.tmp $@
 	$(RM) $(@:.exe=.tmp)
