@@ -4723,6 +4723,7 @@ IDTFlush        endp
 
 
 ;-------------------------------------------------------------------------------
+IFNDEF CONTRIB
 Bordi   proc    near
         pushm   ax,dx
         mov     ah,al
@@ -4738,6 +4739,7 @@ Bordi   proc    near
         popm    ax,dx
         ret
 Bordi   endp
+ENDIF
 
 
 ;-------------------------------------------------------------------------------
