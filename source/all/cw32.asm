@@ -838,7 +838,7 @@ chk386:
 ;
         call    GetSystemFlags
 IFDEF CONTRIB
-        mov     cs:IErrorNumber,11
+        mov     cs:IErrorNumber,10
         jc      InitError
 ENDIF
 ;
@@ -4783,7 +4783,7 @@ IErrorNumber    dw 0
 InitErrorList   dw IErrorM00,IErrorM01,IErrorM02,IErrorM03,IErrorM04,IErrorM05,IErrorM06,IErrorM07
         dw IErrorM08,IErrorM09
 IFDEF CONTRIB
-        dw IErrorM10,IErrorM11
+        dw IErrorM10
 ENDIF
 IErrorM00       db 'CauseWay error '
 IErrorM00n      db '00 : $'
@@ -4843,9 +4843,7 @@ IErrorM09       label byte
         endif
 IFDEF CONTRIB
 IErrorM10       label byte
-        db 'Null environment.',13,10,'$'
-IErrorM11       label byte
-        db 'Unable to read self.',13,10,'$'
+        db 'Unable to locate self.',13,10,'$'
 ENDIF
 ;
 IFDEF PERMNOVM
