@@ -142,14 +142,27 @@ install: cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl
 .PHONY: install
 
 clean: mostlyclean
-	$(RM) -r JWasm.build JWlink.build jwasm jwlink 
+	$(RM) -r JWasm.build JWlink.build jwasm jwlink *.zip
 .PHONY: clean
 
 mostlyclean:
 	$(RM) -r *.o *.obj *.exe *.com *.ovl *.gh *.map *.sym *.lst *.err \
-		 *.tmp mkcode cwc-wat copystub.inc decstub.inc *~ \
+		 *.tmp mkcode cwc-wat copystub.inc decstub.inc tests/tmp *~ \
 		 source/all/*~ source/all/*/*.o source/all/*/*~
 .PHONY: mostlyclean
+
+check: cwl.exe FD12FLOPPY.zip csdpmi7b.zip tests/autoexec.bat
+	$(RM) -r tests/tmp
+	mkdir tests/tmp
+	unzip -j -dtests/tmp FD12FLOPPY.zip FLOPPY.img
+	unzip -j -dtests/tmp csdpmi7b.zip bin/CWSDPMI.EXE
+	mcopy -o -i tests/tmp/FLOPPY.img cwl.exe tests/tmp/CWSDPMI.EXE \
+					 tests/autoexec.bat ::
+	qemu-system-i386 -nographic -fda tests/tmp/FLOPPY.img | \
+	    tee tests/tmp/tests.log
+	@echo  # make sure we start on a new line after QEMU session
+	grep -q '=== Tests OK ===' tests/tmp/tests.log
+.PHONY: check
 
 # Various pattern rules.
 
@@ -300,3 +313,17 @@ cw.lib: source/all/cwlib/cw.lib
 	$(MAKE) -C JWlink.build -f GccUnix.mak
 	cp JWlink.build/GccUnixR/jwlink $@.tmp
 	mv $@.tmp $@
+.PRECIOUS: ./jwlink
+
+# Rules to download various programs and disk images for tests.
+
+FD12FLOPPY.zip:
+	rm -f $@.tmp
+	wget -O $@.tmp https://archive.org/download/FD12FLOPPY/FD12FLOPPY.zip
+	mv $@.tmp $@
+.PRECIOUS: FD12FLOPPY.zip
+
+csdpmi7b.zip:
+	wget -O $@.tmp http://sandmann.dotster.com/cwsdpmi/csdpmi7b.zip
+	mv $@.tmp $@
+.PRECIOUS: csdpmi7b.zip

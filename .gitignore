@@ -8,6 +8,7 @@
 *.lst
 *.err
 *.tmp
+*.zip
 *~
 /jwasm
 /JWasm.build

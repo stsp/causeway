@@ -1,4 +1,4 @@
-# Copyright (c) 2022 TK Chia
+# Copyright (c) 2022--2023 TK Chia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -35,5 +35,9 @@ test:
     - apt-get install -y software-properties-common
     - add-apt-repository -y ppa:tkchia/de-rebus
     - apt-get update -y
-    - apt-get install -y gcc jwasm jwlink make dosbox
-  script: make
+    - >
+        apt-get install -y gcc jwasm jwlink make dosbox wget unzip mtools
+        qemu-system-x86
+  script:
+    - make
+    - make check

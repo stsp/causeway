@@ -1,4 +1,5 @@
-# Copyright (c) 2022--2023 TK Chia
+goto a
+# Copyright (c) 2023 TK Chia
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -18,27 +19,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Configuration file for GitHub (https://github.com/) Continuous Integration.
-
-name: ci-build
-on: [push, pull_request]
-jobs:
-  build-and-test:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: setup
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y software-properties-common
-          # add-apt-repository may sometimes time out trying to download the
-          # PPA's public key.
-          sudo add-apt-repository -y ppa:tkchia/de-rebus \
-           || sudo apt-key add tests/ppa-pub-key.gpg.bin
-          sudo apt-get update -y
-          sudo apt-get install -y jwasm jwlink make dosbox wget unzip \
-                                  mtools qemu-system-x86
-      - name: build
-        run: make
-      - name: test
-        run: make check
+:a
+cwl
+if errorlevel 2 goto x
+fdsetup\bin\jemm386 load
+if errorlevel 1 goto x
+cwl
+if errorlevel 2 goto x
+cwsdpmi -p
+if errorlevel 1 goto x
+cwl
+if errorlevel 2 goto x
+@echo === Tests OK ===
+:x
+fdsetup\bin\fdapm poweroff
