@@ -2733,26 +2733,57 @@ medpre2:
         assume ds:_cwInit
         mov     DPMISwitch,di   ;Store the switch call address.
         mov     DPMISwitch+2,es
+IFNDEF CONTRIB
         mov     es,bx
+ENDIF
         popm    ax,ds
         assume ds:_cwMain
 ;
 ;Attempt to switch mode.
 ;
         test    SystemFlags,1
+IFDEF CONTRIB
+        mov     ax,_cwInit
+        mov     ds,ax
+        assume ds:_cwInit
+ENDIF
         jz      @@Use32Bit24
         xor     ax,ax           ;16 bit segments for this code.
+IFDEF CONTRIB
+        mov     si,offset CWSDPMIPat1
+        cld                     ;work around CWSDPMI lossage (see below)
+        mov     cx,offset CWSDPMIPat2-offset CWSDPMIPat1
+        repe    cmpsb
+        jnz     @@Use16Bit24
+        inc     di
+        cmpsb
+        jnz     @@Use16Bit24
+        inc     di
+        inc     di
+        mov     cl,offset CWSDPMIPat3End-CWSDPMIPat3
+        repe    cmpsb
+        jz      @@CWSDPMI
+ENDIF
         jmp     @@Use16Bit24
 @@Use32Bit24:   mov     ax,1            ;32 bit segments for this code.
-@@Use16Bit24:   push    ax
+@@Use16Bit24:
+IfDEF CONTRIB
+        mov     es,bx
+ENDIF
+IFNDEF CONTRIB
+        push    ax
         mov     ax,_cwInit
         mov     ds,ax
         pop     ax
         assume ds:_cwInit
+ENDIF
         pusha
         call    d[DPMISwitch]   ;Make the switch.
         popa
         jnc     @@DpmiInProtected
+IFDEF CONTRIB
+@@CWSDPMI:
+ENDIF
         mov     IErrorNumber,9
         push    ax
         mov     ax,_cwMain
@@ -4863,6 +4894,26 @@ VMMDrivPath5    db 128 dup (0)  ;used by boot drive.
 ;
 DPMIErrRegs     db size RealRegsStruc dup (0)
 ;
+IFDEF CONTRIB
+;
+;Sandmann's CWSDPMI tries to work around a bug in some DPMI clients:
+;	"Ideally, on the request to enter DPMI's PM with a 16-bit
+;	 request, we would just fail the call setting the carry bit
+;	 like the DPMI specification describes.  Some buggy 16-bit
+;	 compiler tools don't check the return status and will hang
+;	 the machine in this case.  So, I issue an error message and
+;	 exit the image instead."
+;What we want to do however is to continue running, and maybe try switching
+;to 32-bit protected mode instead.  So we need to work around this
+;workaround.  Spot for the code pattern used by CWSDPMI to exit the program,
+;and if we find it, do not switch to 16-bit DPMI.
+;
+CWSDPMIPat1     db 0a8h,001h,075h
+CWSDPMIPat2     db 0bah
+CWSDPMIPat3     db 00eh,01fh,0b4h,009h,0cdh,021h,0b8h,001h,04ch,0cdh,021h
+CWSDPMIPat3End  label byte
+;
+ENDIF
 _cwInit ends
 
 
