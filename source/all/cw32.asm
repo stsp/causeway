@@ -40,7 +40,7 @@ Copyright       label byte
         db 'CauseWay DOS Extender v'
 VersionMajor    db '3.'
 IFDEF CONTRIB
-VersionMinor    db '68'
+VersionMinor    db '69'
 VersionDevelFork db 'tk'
 ELSE
 VersionMinor    db '60'

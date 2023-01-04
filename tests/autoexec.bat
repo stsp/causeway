@@ -22,14 +22,21 @@ goto a
 :a
 cwl
 if errorlevel 2 goto x
+dual
+if errorlevel 1 goto x
 fdsetup\bin\jemm386 load
 if errorlevel 1 goto x
 cwl
 if errorlevel 2 goto x
-cwsdpmi -p
+dual
 if errorlevel 1 goto x
+cwsdpmi -p -s-
+if errorlevel 1 goto x
+set CAUSEWAY=DPMI
 cwl
 if errorlevel 2 goto x
+dual
+if errorlevel 1 goto x
 @echo === Tests OK ===
 :x
 fdsetup\bin\fdapm poweroff

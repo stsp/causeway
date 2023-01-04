@@ -146,20 +146,21 @@ clean: mostlyclean
 .PHONY: clean
 
 mostlyclean:
-	$(RM) -r *.o *.obj *.exe *.com *.ovl *.gh *.map *.sym *.lst *.err \
-		 *.tmp mkcode cwc-wat copystub.inc decstub.inc tests/tmp *~ \
-		 source/all/*~ source/all/*/*.o source/all/*/*~
+	$(RM) -r *.o *.obj *.exe *.com *.ovl *.lib *.gh *.map *.sym *.lst \
+		 *.err *.3p *.tmp mkcode cwc-wat copystub.inc decstub.inc \
+		 tests/tmp *~ source/all/*~ source/all/*/*.o source/all/*/*~
 .PHONY: mostlyclean
 
-check: cwl.exe FD12FLOPPY.zip csdpmi7b.zip tests/autoexec.bat
+check: cwl.exe FD12FLOPPY.zip csdpmi7b.zip dual.exe tests/autoexec.bat
 	$(RM) -r tests/tmp
 	mkdir tests/tmp
 	unzip -j -dtests/tmp FD12FLOPPY.zip FLOPPY.img
 	unzip -j -dtests/tmp csdpmi7b.zip bin/CWSDPMI.EXE
+	mdel -i tests/tmp/FLOPPY.img ::FDSETUP/BIN/GREP.EXE
 	mcopy -o -i tests/tmp/FLOPPY.img cwl.exe tests/tmp/CWSDPMI.EXE \
-					 tests/autoexec.bat ::
-	qemu-system-i386 -nographic -fda tests/tmp/FLOPPY.img | \
-	    tee tests/tmp/tests.log
+					 dual.exe tests/autoexec.bat ::
+	qemu-system-i386 -nographic -fda tests/tmp/FLOPPY.img \
+	  | tee tests/tmp/tests.log
 	@echo  # make sure we start on a new line after QEMU session
 	grep -q '=== Tests OK ===' tests/tmp/tests.log
 .PHONY: check
@@ -273,9 +274,19 @@ cwd.ovl: cwd-pre.ovl cwc.exe
 
 cwd-pre.ovl: $(CWDVOBJ) cwl.exe
 	$(call cw-link,cwl.exe,,$<,$@,$(@:.ovl=.map))
-.PRECIOUS: cwd.ovl
+.PRECIOUS: cwd-pre.ovl
 
 $(CWDVOBJ): $(CWDVDEPS)
+
+# Rules to build the test program for dual mode.
+dual.exe: cwstub.exe dual.3p
+	cat $^ >$@.tmp
+	mv $@.tmp $@
+
+dual.3p: tests/dual.asm $(CWDEPS)
+	$(ASM) -bin -Fo$@.tmp -Fl$(@:.3p=.lst) $<
+	mv $@.tmp $@
+.PRECIOUS: dual.3p
 
 # FIXME: figure out how to build this from sources!  Besides JWasm, we
 # probably need a library manager along the lines of Watcom wlib.

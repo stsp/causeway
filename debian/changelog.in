@@ -1,3 +1,9 @@
+causeway-dosx (3.69tk-build20230104-1~@distro@) @distro@; urgency=medium
+
+  * Work around CWSDPMI's workaround for broken 16-bit DPMI clients.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Wed, 04 Jan 2023 22:14:53 +0000
+
 causeway-dosx (3.68tk-build20221226-1~@distro@) @distro@; urgency=medium
 
   * Fix: handle empty environment arrays with no strings, on program entry,
