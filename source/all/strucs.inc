@@ -303,10 +303,10 @@ IFDEF CONTRIB
 ;   contains several 3P modules, CauseWay can use this field value to
 ;   quickly move from one module to the next.
 ;
-; On NewFlags:
+; On NewFlags, SystemFlags, & RawSystemFlags:
 ;   RBIL lists the meanings of some of the executable control flags in a
 ;   CauseWay "3P" program header:
-;     "	Bit(s)	Description
+;     "	Bit(s)	Description	(Table 03164)
 ;	 0	16-bit interrupt stack frame
 ;	 7	descriptor table type (0 = GDT, 1 = LDT)
 ;	 14	16-bit default data size
@@ -316,8 +316,7 @@ IFDEF CONTRIB
 ;   RawSystemFlags when it loads a 3P program.
 ;
 ;   CauseWay does use some other bits in SystemFlags & RawSystemFlags.
-;   Unfortunately the source code does not assign names to these bits, so we
-;   must try to guess at their meanings, as follows...
+;   Unfortunately the source code does not assign names to these bits.
 ;
 ;   These flags can be set by the programmer in the 3P header:
 ;	Bit(s)	Description
@@ -325,21 +324,27 @@ IFDEF CONTRIB
 ;		DPMI host or a 32-bit DPMI host; if the bitness given in bit
 ;		0 does not work, CauseWay will try to flip bit 0
 ;
-;   These flags are internally set by CauseWay:
-;	Bit(s)	Description
-;	 1	VMM present, i.e. page fault handler installed
-;	 2--3	type of protected mode environment in use (set from
-;		the ProtectedType variable)
-;	 4	whether underlying system supports DPMI
-;	 5	whether underlying system supports VCPI
-;	 6	whether underlying system supports raw protected mode
-;		(bits 4--6 are set from the ProtectedFlags variable)
-;	 15	basic protected mode environment has been set up
+;   Some other flags are set internally by CauseWay.  RBIL says,
+;     "	Bit(s)	Description	(Table 03162)
+;	 0	32-bit code
+;	 1	virtual memory manage enabled
+;	 3-2	mode: 00 raw extended memory, 01 VCPI, 10 DPMI
+;	 4	DPMI available
+;	 5	VCPI available
+;	 6	no memory managers
+;	 7	application descriptor table type: 0 = GDT, 1 = LDT
+;	 14-8	reserved
+;	 15	debugging engine present"
+;
+;   Bit 0 actually means the opposite, i.e. if set, CauseWay is running in
+;   _16-bit_ DPMI mode.  Bit 6 really says whether the system can switch to
+;   "raw" protected mode.  Bits 15 says whether a basic protected mode
+;   environment has been set up.
 ;
 ; On NewAutoDS etc.:
 ;   For some reason (?), RBIL claims there is a "length of name" field here.
 ;
-;	-- tkchia March 2022
+;	-- tkchia January 2023
 ENDIF
 
 
