@@ -1,3 +1,9 @@
+causeway-dosx (3.70tk-build20230106-1~@distro@) @distro@; urgency=medium
+
+  * int 0x21, ah = 0x4b, now processes FCBs.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Fri, 06 Jan 2023 22:06:45 +0000
+
 causeway-dosx (3.69tk-build20230104-1~@distro@) @distro@; urgency=medium
 
   * Work around CWSDPMI's workaround for broken 16-bit DPMI clients.

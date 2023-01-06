@@ -878,8 +878,24 @@ ENDIF
         ;
         ;Copy the FCB's
         ;
-        if      0
+IFDEF CONTRIB
+EXECFCB equ     1
+ELSE
+EXECFCB equ     0
+ENDIF
+        if      EXECFCB
         pushm   ecx,esi,edi,ds,es
+IFDEF CONTRIB
+        test    cs:Int21hSystemFlags,1
+        jz      @@Ef6
+        movzx   edi,w[ebx+(2)+(2+2)] ;Get FCB 1 offset.
+        mov     es,[ebx+(2)+(2+2)+2] ;& segment.
+        jmp     @@Ef7
+@@Ef6:  mov     edi,[ebx+(2)+(4+2)]
+        mov     es,[ebx+(2)+(4+2)+4]
+@@Ef7:  mov     ds,fs:[EPSP_TransProt]
+        mov     esi,512
+ELSE
         push    ds
         mov     ds,cs:Int21hDSeg
         assume ds:_cwMain
@@ -898,6 +914,7 @@ ENDIF
         lds     esi,TransferBuffer
         assume ds:nothing
         add     esi,512
+ENDIF
         pushm   esi,edi,ds,es
         popm    edi,esi,es,ds
         mov     ecx,10h
@@ -906,6 +923,17 @@ ENDIF
         popm    ecx,esi,edi,ds,es
         ;
         pushm   ecx,esi,edi,ds,es
+IFDEF CONTRIB
+        test    cs:Int21hSystemFlags,1
+        jz      @@Ef8
+        movzx   edi,w[ebx+(2)+(2+2)+(2+2)] ;Get FCB 2 offset.
+        mov     es,[ebx+(2)+(2+2)+(2+2)+2] ;& segment.
+        jmp     @@Ef9
+@@Ef8:  mov     edi,[ebx+(2)+(4+2)+(4+2)]
+        mov     es,[ebx+(2)+(4+2)+(4+2)+4]
+@@Ef9:  mov     ds,fs:[EPSP_TransProt]
+        mov     esi,512+16
+ELSE
         push    ds
         mov     ds,cs:Int21hDSeg
         assume ds:_cwMain
@@ -924,6 +952,7 @@ ENDIF
         lds     esi,TransferBuffer
         assume ds:nothing
         add     esi,512+16
+ENDIF
         pushm   esi,edi,ds,es
         popm    edi,esi,es,ds
         mov     ecx,10h
