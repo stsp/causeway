@@ -527,8 +527,14 @@ Int21hReadFile  proc    near
         mov     es,cs:Int21hDSeg
         mov     edi,offset Int21Buffer
         movzx   edx,w[ebp+Int_CX]       ;Get length.
+IFDEF CONTRIB
+        jnc     @@6
+ENDIF
         cmp     cs:Int21hDOS4GFlag,0
         jz      @@4
+IFDEF CONTRIB                           ;If 32-bit mode, pre-clear top half
+@@6:    and     w[ebp+Int_EAX+2],0      ;of return value.
+ENDIF
         mov     edx,[ebp+Int_ECX]       ;Get length.
 @@4:    xor     ebx,ebx         ;Reset length read.
 @@0:    mov     ecx,edx
@@ -552,7 +558,11 @@ Int21hReadFile  proc    near
         call    Int21hAL2Carry  ;Set carry.
         or      al,al           ;Carry set?
         jz      @@2
+IFDEF CONTRIB
+        movzx   ebx,es:w[Real_EAX+edi]  ;get return code.
+ELSE
         mov     ebx,es:Real_EAX[edi]    ;get return code.
+ENDIF
         jmp     @@3
 @@2:    mov     eax,es:Real_EAX[edi]    ;get bytes read.
         movzx   eax,ax
@@ -574,10 +584,15 @@ Int21hReadFile  proc    near
         jnz     @@3
         or      edx,edx
         jnz     @@0
+IFDEF CONTRIB
+@@3:    and     w[ebp+Int_AX],0
+        or      [ebp+Int_EAX],ebx ;store length or return code.
+ELSE
 @@3:    mov     [ebp+Int_AX],bx ;store length or return code.
         cmp     cs:Int21hDOS4GFlag,0
         jz      @@5
         mov     [ebp+Int_EAX],ebx
+ENDIF
 @@5:    ret
 Int21hReadFile  endp
 
@@ -593,8 +608,14 @@ Int21hWriteFile proc near
         mov     es,cs:Int21hDSeg
         mov     edi,offset Int21Buffer
         movzx   edx,w[ebp+Int_CX]       ;Get length.
+IFDEF CONTRIB
+        jnc     @@6
+ENDIF
         cmp     cs:Int21hDOS4GFlag,0
         jz      @@4
+IFDEF CONTRIB                           ;If 32-bit mode, pre-clear top half
+@@6:    and     w[ebp+Int_EAX+2],0      ;of return value.
+ENDIF
         mov     edx,[ebp+Int_ECX]       ;Get length.
 @@4:    xor     ebx,ebx         ;Reset length read.
 @@0:    mov     ecx,edx
@@ -623,7 +644,11 @@ Int21hWriteFile proc near
         call    Int21hAL2Carry  ;Set carry.
         or      al,al           ;Carry set?
         jz      @@2
+IFDEF CONTRIB
+        movzx   ebx,es:w[Real_EAX+edi]  ;get return code.
+ELSE
         mov     ebx,es:Real_EAX[edi]    ;get return code.
+ENDIF
         jmp     @@3
 @@2:    mov     eax,es:Real_EAX[edi]    ;get bytes read.
         movzx   eax,ax
@@ -633,10 +658,15 @@ Int21hWriteFile proc near
         jnz     @@3
         or      edx,edx
         jnz     @@0
+IFDEF CONTRIB
+@@3:    and     w[ebp+Int_AX],0
+        or      [ebp+Int_EAX],ebx ;store length or return code.
+ELSE
 @@3:    mov     [ebp+Int_AX],bx ;store length or return code.
         cmp     cs:Int21hDOS4GFlag,0
         jz      @@5
         mov     [ebp+Int_EAX],ebx
+ENDIF
 @@5:    ret
 Int21hWriteFile endp
 
@@ -1824,6 +1854,9 @@ Int21hGetErrorInfo endp
 ;On Exit:
 ;
 ;DS:ESI - Valid [extended] pointer.
+IFDEF CONTRIB
+;CF     - Set if string too long to fit into transfer buffer.
+ENDIF
 ;
 ;All other registers preserved.
 ;

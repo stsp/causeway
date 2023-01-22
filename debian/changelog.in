@@ -1,3 +1,9 @@
+causeway-dosx (3.71tk-build20230122-1~@distro@) @distro@; urgency=medium
+
+  * int 0x21, ah = 0x3f or 0x40, now uses ecx if it uses ds:edx.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Sun, 22 Jan 2023 21:05:24 +0000
+
 causeway-dosx (3.70tk-build20230106-1~@distro@) @distro@; urgency=medium
 
   * int 0x21, ah = 0x4b, now processes FCBs.
