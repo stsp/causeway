@@ -4,3 +4,6 @@
 [submodule "JWlink.src"]
 	url = https://gitlab.com/tkchia/JWlink.git
 	path = JWlink.src
+[submodule "xlib.src"]
+	path = xlib.src
+	url = https://codeberg.org/tkchia/cc386.ladsoft.git

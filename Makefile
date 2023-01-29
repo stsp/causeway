@@ -84,6 +84,7 @@ else
     CWLDEPS += $(LINK)
 endif
 endif
+LIB = ./xlib
 # Use UPX rather than CauseWay's own compressor to compress the CauseWay
 # loader stub, if we can.
 ifneq "" "$(shell upx -V 2>/dev/null)"
@@ -142,7 +143,7 @@ install: cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl
 .PHONY: install
 
 clean: mostlyclean
-	$(RM) -r JWasm.build JWlink.build jwasm jwlink *.zip
+	$(RM) -r JWasm.build JWlink.build xlib.build jwasm jwlink xlib *.zip
 .PHONY: clean
 
 mostlyclean:
@@ -313,7 +314,6 @@ cw.lib: source/all/cwlib/cw.lib
 		then :; \
 		else echo ' -m32'; \
 	fi)
-
 ./jwlink:
 	$(RM) -r JWlink.build
 	$(GIT) submodule update --init JWlink.src
@@ -325,6 +325,35 @@ cw.lib: source/all/cwlib/cw.lib
 	cp JWlink.build/GccUnixR/jwlink $@.tmp
 	mv $@.tmp $@
 .PRECIOUS: ./jwlink
+
+# Rule to patch & build David Lindauer's xlib.
+./xlib:
+	$(RM) -r xlib.build xlib.zip
+	$(GIT) submodule update --init xlib.src
+	cp -a xlib.src xlib.build
+	set -e; \
+	for f1 in xlib.build/xlib/*.[cHP]; do \
+		f2="`echo "$$f1" | tr ABCDEFGHIJKLMNOPQRSTUVWXYZ \
+				      abcdefghijklmnopqrstuvwxyz`"; \
+		sed -e 's,\.\.\\,../,g' -e '/\/\* STATIC \*\// s,^,//,' \
+		    -e '/^static BOOL ReadArgs/ '` \
+		       `'s/^/static BOOL ReadResponse(char *, int *, int *);/'\
+		    -e '/^void BoolSetup/ s/^/static /' \
+		    -e '/^#include <dos\.h>/ s,^,//,' \
+		    -e '/^#include <windows\.h>/ s,^,//,' \
+		    -e 's/\*p++ = (char)toupper(\*p)/p++/' \
+		    "$$f1" >"$$f2".tmp; \
+		mv "$$f2".tmp "$$f2"; \
+	done
+	$(CC) $(CFLAGS) -DMSDOS \
+	    xlib.build/xlib/allocate.c xlib.build/xlib/args.c \
+	    xlib.build/xlib/dict.c xlib.build/xlib/error.c \
+	    xlib.build/xlib/ext.c xlib.build/xlib/fatal.c \
+	    xlib.build/xlib/hash.c xlib.build/xlib/import.c \
+	    xlib.build/xlib/lib.c xlib.build/xlib/list.c \
+	    xlib.build/xlib/module.c xlib.build/xlib/unmangle.c \
+	    xlib.build/xlib/usage.c xlib.build/xlib/xlib.c -o $@
+.PRECIOUS: ./xlib
 
 # Rules to download various programs and disk images for tests.
 
