@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -14,6 +14,7 @@
 ;ALL registers preserved.
 ;
 GetPath	proc	near
+	public	GetPath
 	pushm	eax,edx,esi,edx
 	mov	ah,19h	;get current disc
 	int	21h

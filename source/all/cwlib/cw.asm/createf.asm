@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -16,6 +16,7 @@
 ;EBX	- File handle.
 ;
 CreateFile	proc	near
+	public	CreateFile
 	pushm	eax,ecx
 	mov	ah,3ch		;Create function.
 	xor	cx,cx		;normal attributes.

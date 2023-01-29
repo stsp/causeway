@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -10,6 +10,7 @@
 ;ESI	- pointer to string to print.
 ;
 PrintString	proc	near
+	public	PrintString
 	pushm	eax,esi,edx
 l0:	mov	dl,[esi]
 	inc	esi

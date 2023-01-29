@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -22,6 +22,7 @@
 ;ECX	- absolute offset from start of file.
 ;
 SetFilePointer	proc	near
+	public	SetFilePointer
 	pushm	eax,edx
 	mov	dx,cx
 	shr	ecx,16

@@ -3,8 +3,8 @@
 ;
 ;VESA patch example, 32-bit.
 ;
-	include ..\cwlib.inc
-	include ..\cw.inc
+	include ../cwlib.inc
+	include ../../cw.inc
 
 ;
 RR	struc

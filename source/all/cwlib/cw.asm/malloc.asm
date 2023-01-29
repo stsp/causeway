@@ -1,5 +1,5 @@
-	include ..\cwlib.inc
-	include ..\..\cw.inc
+	include ../cwlib.inc
+	include ../../cw.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -19,6 +19,7 @@
 ;All other registers preserved.
 ;
 Malloc	proc	near
+	public	Malloc
 	push	eax
 	sys	GetMemLinear32
 	jc	l0

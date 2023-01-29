@@ -1,5 +1,5 @@
-	include ..\cwlib.inc
-	include ..\..\cw.inc
+	include ../cwlib.inc
+	include ../../cw.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -20,6 +20,7 @@
 ;All other registers preserved.
 ;
 ReMalloc	proc	near
+	public	ReMalloc
 	pushm	eax,edx
 	add	esi,DataLinearBase
 	sys	ResMemLinear32

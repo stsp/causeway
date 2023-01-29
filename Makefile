@@ -60,6 +60,186 @@ CWDVSRCS = $(CWDVMAIN) source/all/cwd/macros.inc source/all/cw.inc \
 	   source/all/cwd/disas.asm source/all/cwd/fpu.asm
 CWDVDEPS = $(CWDVSRCS)
 
+CWLIB	  = cw.lib
+CWLIBSRCS = source/all/cwlib/cw.asm/_apndstr.asm \
+	    source/all/cwlib/cw.asm/apndstr.asm \
+	    source/all/cwlib/cw.asm/bdrwlin.asm \
+	    source/all/cwlib/cw.asm/_beep.asm \
+	    source/all/cwlib/cw.asm/beep.asm \
+	    source/all/cwlib/cw.asm/_bin2dec.asm \
+	    source/all/cwlib/cw.asm/bin2dec.asm \
+	    source/all/cwlib/cw.asm/_bin2hex.asm \
+	    source/all/cwlib/cw.asm/bin2hex.asm \
+	    source/all/cwlib/cw.asm/bitfrec.asm \
+	    source/all/cwlib/cw.asm/bitmaps.asm \
+	    source/all/cwlib/cw.asm/blitbit.asm \
+	    source/all/cwlib/cw.asm/blitw.asm \
+	    source/all/cwlib/cw.asm/bmxflp.asm \
+	    source/all/cwlib/cw.asm/bmyflp.asm \
+	    source/all/cwlib/cw.asm/_bord.asm \
+	    source/all/cwlib/cw.asm/bord.asm \
+	    source/all/cwlib/cw.asm/bsetpix.asm \
+	    source/all/cwlib/cw.asm/_buffile.asm \
+	    source/all/cwlib/cw.asm/buffile.asm \
+	    source/all/cwlib/cw.asm/calsplts.asm \
+	    source/all/cwlib/cw.asm/_closef.asm \
+	    source/all/cwlib/cw.asm/closef.asm \
+	    source/all/cwlib/cw.asm/_closew.asm \
+	    source/all/cwlib/cw.asm/closew.asm \
+	    source/all/cwlib/cw.asm/_command.asm \
+	    source/all/cwlib/cw.asm/command.asm \
+	    source/all/cwlib/cw.asm/_copystr.asm \
+	    source/all/cwlib/cw.asm/copystr.asm \
+	    source/all/cwlib/cw.asm/_crbtmp.asm \
+	    source/all/cwlib/cw.asm/crbtmp.asm \
+	    source/all/cwlib/cw.asm/_createf.asm \
+	    source/all/cwlib/cw.asm/createf.asm \
+	    source/all/cwlib/cw.asm/_delay.asm \
+	    source/all/cwlib/cw.asm/delay.asm \
+	    source/all/cwlib/cw.asm/_deletef.asm \
+	    source/all/cwlib/cw.asm/deletef.asm \
+	    source/all/cwlib/cw.asm/_dlgbtwn.asm \
+	    source/all/cwlib/cw.asm/dlgbtwn.asm \
+	    source/all/cwlib/cw.asm/_dlgdraw.asm \
+	    source/all/cwlib/cw.asm/dlgdraw.asm \
+	    source/all/cwlib/cw.asm/_dlggtbd.asm \
+	    source/all/cwlib/cw.asm/dlggtbd.asm \
+	    source/all/cwlib/cw.asm/_dlggtbw.asm \
+	    source/all/cwlib/cw.asm/dlggtbw.asm \
+	    source/all/cwlib/cw.asm/_dlggtbx.asm \
+	    source/all/cwlib/cw.asm/dlggtbx.asm \
+	    source/all/cwlib/cw.asm/_dlggtby.asm \
+	    source/all/cwlib/cw.asm/dlggtby.asm \
+	    source/all/cwlib/cw.asm/_dlggtd.asm \
+	    source/all/cwlib/cw.asm/dlggtd.asm \
+	    source/all/cwlib/cw.asm/_dlggtst.asm \
+	    source/all/cwlib/cw.asm/dlggtst.asm \
+	    source/all/cwlib/cw.asm/_dlggtw.asm \
+	    source/all/cwlib/cw.asm/dlggtw.asm \
+	    source/all/cwlib/cw.asm/dlg_oc.asm \
+	    source/all/cwlib/cw.asm/_dlgstst.asm \
+	    source/all/cwlib/cw.asm/dlgstst.asm \
+	    source/all/cwlib/cw.asm/_dlgwhch.asm \
+	    source/all/cwlib/cw.asm/dlgwhch.asm \
+	    source/all/cwlib/cw.asm/drwlin.asm \
+	    source/all/cwlib/cw.asm/_filesel.asm \
+	    source/all/cwlib/cw.asm/filesel.asm \
+	    source/all/cwlib/cw.asm/fillrct.asm \
+	    source/all/cwlib/cw.asm/fillw.asm \
+	    source/all/cwlib/cw.asm/_flmknm.asm \
+	    source/all/cwlib/cw.asm/flmknm.asm \
+	    source/all/cwlib/cw.asm/_free.asm \
+	    source/all/cwlib/cw.asm/free.asm \
+	    source/all/cwlib/cw.asm/_getdrv.asm \
+	    source/all/cwlib/cw.asm/getdrv.asm \
+	    source/all/cwlib/cw.asm/_getdrvs.asm \
+	    source/all/cwlib/cw.asm/getdrvs.asm \
+	    source/all/cwlib/cw.asm/_getkey.asm \
+	    source/all/cwlib/cw.asm/getkey.asm \
+	    source/all/cwlib/cw.asm/_getpath.asm \
+	    source/all/cwlib/cw.asm/getpath.asm \
+	    source/all/cwlib/cw.asm/ldbm.asm \
+	    source/all/cwlib/cw.asm/_ldfont.asm \
+	    source/all/cwlib/cw.asm/ldfont.asm \
+	    source/all/cwlib/cw.asm/_ldgif.asm \
+	    source/all/cwlib/cw.asm/ldgif.asm \
+	    source/all/cwlib/cw.asm/_ldiff.asm \
+	    source/all/cwlib/cw.asm/ldiff.asm \
+	    source/all/cwlib/cw.asm/_ldimage.asm \
+	    source/all/cwlib/cw.asm/ldimage.asm \
+	    source/all/cwlib/cw.asm/ldpcx.asm \
+	    source/all/cwlib/cw.asm/_ldtga.asm \
+	    source/all/cwlib/cw.asm/ldtga.asm \
+	    source/all/cwlib/cw.asm/_lnstr.asm \
+	    source/all/cwlib/cw.asm/lnstr.asm \
+	    source/all/cwlib/cw.asm/_makflst.asm \
+	    source/all/cwlib/cw.asm/makflst.asm \
+	    source/all/cwlib/cw.asm/_malloc.asm \
+	    source/all/cwlib/cw.asm/malloc.asm \
+	    source/all/cwlib/cw.asm/mdelst.asm \
+	    source/all/cwlib/cw.asm/_messw.asm \
+	    source/all/cwlib/cw.asm/messw.asm \
+	    source/all/cwlib/cw.asm/_mgetpos.asm \
+	    source/all/cwlib/cw.asm/mouse.asm \
+	    source/all/cwlib/cw.asm/_msetype.asm \
+	    source/all/cwlib/cw.asm/null.asm \
+	    source/all/cwlib/cw.asm/_openf.asm \
+	    source/all/cwlib/cw.asm/openf.asm \
+	    source/all/cwlib/cw.asm/openw.asm \
+	    source/all/cwlib/cw.asm/printw.asm \
+	    source/all/cwlib/cw.asm/_prntstr.asm \
+	    source/all/cwlib/cw.asm/prntstr.asm \
+	    source/all/cwlib/cw.asm/_readf.asm \
+	    source/all/cwlib/cw.asm/readf.asm \
+	    source/all/cwlib/cw.asm/regclipw.asm \
+	    source/all/cwlib/cw.asm/_regsbit.asm \
+	    source/all/cwlib/cw.asm/regsbit.asm \
+	    source/all/cwlib/cw.asm/_regupw.asm \
+	    source/all/cwlib/cw.asm/regupw.asm \
+	    source/all/cwlib/cw.asm/_relsbit.asm \
+	    source/all/cwlib/cw.asm/relsbit.asm \
+	    source/all/cwlib/cw.asm/_remallo.asm \
+	    source/all/cwlib/cw.asm/remallo.asm \
+	    source/all/cwlib/cw.asm/_remsbit.asm \
+	    source/all/cwlib/cw.asm/remsbit.asm \
+	    source/all/cwlib/cw.asm/_renfile.asm \
+	    source/all/cwlib/cw.asm/renfile.asm \
+	    source/all/cwlib/cw.asm/_rmsbits.asm \
+	    source/all/cwlib/cw.asm/rmsbits.asm \
+	    source/all/cwlib/cw.asm/_setdacs.asm \
+	    source/all/cwlib/cw.asm/setdacs.asm \
+	    source/all/cwlib/cw.asm/_setdrv.asm \
+	    source/all/cwlib/cw.asm/setdrv.asm \
+	    source/all/cwlib/cw.asm/_setmode.asm \
+	    source/all/cwlib/cw.asm/setmode.asm \
+	    source/all/cwlib/cw.asm/_setpal.asm \
+	    source/all/cwlib/cw.asm/setpal.asm \
+	    source/all/cwlib/cw.asm/_setpath.asm \
+	    source/all/cwlib/cw.asm/setpath.asm \
+	    source/all/cwlib/cw.asm/_setpix.asm \
+	    source/all/cwlib/cw.asm/setpix.asm \
+	    source/all/cwlib/cw.asm/_setposf.asm \
+	    source/all/cwlib/cw.asm/setposf.asm \
+	    source/all/cwlib/cw.asm/_srchrgb.asm \
+	    source/all/cwlib/cw.asm/srchrgb.asm \
+	    source/all/cwlib/cw.asm/_srtflst.asm \
+	    source/all/cwlib/cw.asm/srtflst.asm \
+	    source/all/cwlib/cw.asm/startup.asm \
+	    source/all/cwlib/cw.asm/_strlnpx.asm \
+	    source/all/cwlib/cw.asm/strlnpx.asm \
+	    source/all/cwlib/cw.asm/svbm.asm \
+	    source/all/cwlib/cw.asm/_svgif.asm \
+	    source/all/cwlib/cw.asm/svgif.asm \
+	    source/all/cwlib/cw.asm/_sviff.asm \
+	    source/all/cwlib/cw.asm/sviff.asm \
+	    source/all/cwlib/cw.asm/_svimage.asm \
+	    source/all/cwlib/cw.asm/svimage.asm \
+	    source/all/cwlib/cw.asm/_svtga.asm \
+	    source/all/cwlib/cw.asm/svtga.asm \
+	    source/all/cwlib/cw.asm/_sys2hrd.asm \
+	    source/all/cwlib/cw.asm/sys2hrd.asm \
+	    source/all/cwlib/cw.asm/_ulflist.asm \
+	    source/all/cwlib/cw.asm/ulflist.asm \
+	    source/all/cwlib/cw.asm/_upchr.asm \
+	    source/all/cwlib/cw.asm/upchr.asm \
+	    source/all/cwlib/cw.asm/_upprstr.asm \
+	    source/all/cwlib/cw.asm/upprstr.asm \
+	    source/all/cwlib/cw.asm/_vesa.asm \
+	    source/all/cwlib/cw.asm/vesa.asm \
+	    source/all/cwlib/cw.asm/_video.asm \
+	    source/all/cwlib/cw.asm/video.asm \
+	    source/all/cwlib/cw.asm/_waitkey.asm \
+	    source/all/cwlib/cw.asm/waitkey.asm \
+	    source/all/cwlib/cw.asm/wdrwlin.asm \
+	    source/all/cwlib/cw.asm/_whichw.asm \
+	    source/all/cwlib/cw.asm/whichw.asm \
+	    source/all/cwlib/cw.asm/windows.asm \
+	    source/all/cwlib/cw.asm/_writef.asm \
+	    source/all/cwlib/cw.asm/writef.asm \
+	    source/all/cwlib/cw.asm/wsetpix.asm
+CWLIBOBJS = $(CWLIBSRCS:%.asm=%.o)
+CWLIBDEPS = source/all/cwlib/cwlib.inc source/all/cwlib/cw.asm/palette.inc
+
 # If we already have JWasm &/or the Watcom Linker (wlink) &/or JWlink
 # installed, use those.  Otherwise, download & build JWasm & JWlink.
 # JWlink is used for bootstrapping the CauseWay Linker (TODO).
@@ -73,6 +253,7 @@ else
     CWLDEPS += $(ASM)
     CWDDEPS += $(ASM)
     CWDVDEPS += $(ASM)
+    CWLIBDEPS += $(ASM)
 endif
 ifneq "" "$(shell wlink '-?' 2>/dev/null </dev/null)"
     LINK = wlink
@@ -84,7 +265,7 @@ else
     CWLDEPS += $(LINK)
 endif
 endif
-LIB = ./xlib
+XLIB = ./xlib
 # Use UPX rather than CauseWay's own compressor to compress the CauseWay
 # loader stub, if we can.
 ifneq "" "$(shell upx -V 2>/dev/null)"
@@ -168,7 +349,7 @@ check: cwl.exe FD12FLOPPY.zip csdpmi7b.zip dual.exe tests/autoexec.bat
 
 # Various pattern rules.
 
-%.o: %.asm
+%.o: %.asm $(CWLDEPS) $(CWDVDEPS) $(CWLIBDEPS)
 	$(ASM) -DENGLISH=1 -DCONTRIB=1 -Fo$@.tmp -Fl$(@:.o=.lst) $<
 	mv $@.tmp $@
 .PRECIOUS: %.o
@@ -289,11 +470,11 @@ dual.3p: tests/dual.asm $(CWDEPS)
 	mv $@.tmp $@
 .PRECIOUS: dual.3p
 
-# FIXME: figure out how to build this from sources!  Besides JWasm, we
-# probably need a library manager along the lines of Watcom wlib.
-cw.lib: source/all/cwlib/cw.lib
-	cp $< $@.tmp
-	mv $@.tmp $@
+# Rules to build CauseWay's utility library from sources.
+$(CWLIB): $(CWLIBOBJS) $(XLIB)
+	$(RM) $@
+	$(XLIB) /u $@ $(CWLIBOBJS:%=+%)
+.PRECIOUS: $(CWLIB)
 
 # Rule to build JWasm.
 ./jwasm:

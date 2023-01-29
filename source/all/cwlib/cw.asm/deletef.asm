@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -16,6 +16,7 @@
 ;ALL registers preserved.
 ;
 DeleteFile	proc	near
+	public	DeleteFile
 	push	eax
 	mov	ah,41h
 	int	21h

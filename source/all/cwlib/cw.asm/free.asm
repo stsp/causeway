@@ -1,5 +1,5 @@
-	include ..\cwlib.inc
-	include ..\..\cw.inc
+	include ../cwlib.inc
+	include ../../cw.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -15,6 +15,7 @@
 ;All registers preserved.
 ;
 Free	proc	near
+	public	Free
 	pushm	eax,esi
 	add	esi,DataLinearBase	;make it a linear address again.
 	sys	RelMemLinear32

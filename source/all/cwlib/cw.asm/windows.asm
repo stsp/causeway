@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -41,7 +41,8 @@ BaseHandler	endp
 ;
 ;Some variables common to several routines.
 ;
-BaseWindow	WIN <0,0,0,32767,32767,BaseHandler>
+BaseWindow	label dword
+	WIN <0,0,0,32767,32767,BaseHandler>
 ;
 WinWindowList	label dword
 	dd BaseWindow, MaxWinWindows dup (-1)

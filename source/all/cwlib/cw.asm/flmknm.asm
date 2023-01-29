@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------------
@@ -21,6 +21,7 @@
 ;name which this routine does.
 ;
 FileListMakeName proc near
+	public	FileListMakeName
 	pushm	eax,edx,esi,edi
 	add	esi,4
 	call	CopyString		;Copy path string into place.

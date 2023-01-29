@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------------
@@ -43,6 +43,7 @@
 ; Next 256 bytes is the path to append the names to.
 ;
 MakeFileList	proc	near
+	public	MakeFileList
 	pushm	ebx,ecx,edx,esi,edi
 	mov	FileList,0
 	mov	FileMask,edx

@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -17,6 +17,7 @@
 ;ALL registers preserved.
 ;
 RenameFile	proc	near
+	public	RenameFile
 	push	eax
 	mov	ah,56h
 	int	21h

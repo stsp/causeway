@@ -1,6 +1,6 @@
 
-	include ..\cwlib.inc
-	include ..\cw.inc
+	include ../cwlib.inc
+	include ../../cw.inc
 	scode
 
 ;-------------------------------------------------------------------------

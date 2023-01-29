@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -16,6 +16,7 @@
 ;EAX	- Bytes written.
 ;
 WriteFile	proc	near
+	public	WriteFile
 	pushm	ecx,edx,esi
 	xor	esi,esi
 @@0:	pushm	ebx,ecx,edx,esi

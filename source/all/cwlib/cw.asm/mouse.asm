@@ -1,5 +1,5 @@
-	include ..\cwlib.inc
-	include ..\cw.inc
+	include ../cwlib.inc
+	include ../../cw.inc
 
 ME	struc
  ME_Flags	dw ?

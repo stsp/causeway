@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -30,6 +30,7 @@
 ;nothing.
 ;
 ReadCommand	proc	near
+	public	ReadCommand
 	pushad
 	push	es
 	mov	es,PSPSegment

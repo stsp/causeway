@@ -1,5 +1,5 @@
-	include ..\cwlib.inc
-	include ..\cw.inc
+	include ../cwlib.inc
+	include ../../cw.inc
 
 	ifndef CWNEAR
 	.stack 1024
@@ -16,6 +16,7 @@ CW_DEBUG_ENTRY_CS_EIP df _Main
 ;look the same.
 ;
 Startup	proc	near
+	public	Startup
 ;
 ;Store useful values.
 ;

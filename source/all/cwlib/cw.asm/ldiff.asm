@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 
 BMHD	struc
 BMHD_Wide	dw ?		;X size of data

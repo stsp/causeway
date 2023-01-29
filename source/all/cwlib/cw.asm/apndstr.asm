@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -11,6 +11,7 @@
 ;EDI	- destination string to append to.
 ;
 AppendString	proc	near
+	public	AppendString
 	pushm	eax,ecx,esi,edi
 	or	ecx,-1
 	xor	al,al

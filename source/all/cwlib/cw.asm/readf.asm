@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -16,6 +16,7 @@
 ;EAX	- bytes read.
 ;
 ReadFile	proc	near
+	public	ReadFile
 	pushm	ecx,edx,esi
 	xor	esi,esi		;reset length read.
 @@0:	pushm	ebx,ecx,edx,esi

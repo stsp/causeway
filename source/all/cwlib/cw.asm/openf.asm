@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -16,6 +16,7 @@
 ;EBX	- File handle.
 ;
 OpenFile	proc	near
+	public	OpenFile
 	push	eax
 	mov	ax,3d02h		;Open with read & write access.
 	int	21h

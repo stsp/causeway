@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -15,6 +15,7 @@
 ;ALL registers preserved.
 ;
 CopyString	proc	near
+	public	CopyString
 	pushm	eax,ecx,esi,edi
 	push	esi
 	xchg	esi,edi

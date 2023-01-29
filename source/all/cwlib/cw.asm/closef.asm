@@ -1,4 +1,4 @@
-	include ..\cwlib.inc
+	include ../cwlib.inc
 	scode
 
 ;-------------------------------------------------------------------------
@@ -10,6 +10,7 @@
 ;EBX	- file handle.
 ;
 CloseFile	proc	near
+	public	CloseFile
 	push	eax
 	mov	ah,3eh
 	int	21h
