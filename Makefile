@@ -265,7 +265,12 @@ else
     CWLDEPS += $(LINK)
 endif
 endif
-XLIB = ./xlib
+ifneq "" "$(shell xlib.ladsoft 2>/dev/null </dev/null)"
+    XLIB = xlib.ladsoft
+else
+    XLIB = ./xlib
+    CWLIBDEPS += $(XLIB)
+endif
 # Use UPX rather than CauseWay's own compressor to compress the CauseWay
 # loader stub, if we can.
 ifneq "" "$(shell upx -V 2>/dev/null)"
@@ -312,10 +317,10 @@ endef
 
 # Various phony targets.
 
-default: cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl
+default: cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl cwc.exe
 .PHONY: default
 
-install: cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl
+install: cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl cwc.exe
 	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(bindir2)
 	$(INSTALL) $^ $(DESTDIR)$(bindir)
 	$(RM) -r $(^:%=$(DESTDIR)$(bindir2)/%)
@@ -471,9 +476,9 @@ dual.3p: tests/dual.asm $(CWDEPS)
 .PRECIOUS: dual.3p
 
 # Rules to build CauseWay's utility library from sources.
-$(CWLIB): $(CWLIBOBJS) $(XLIB)
+$(CWLIB): $(CWLIBOBJS)
 	$(RM) $@
-	$(XLIB) /u $@ $(CWLIBOBJS:%=+%)
+	$(XLIB) $@ $(CWLIBOBJS:%=+%)
 .PRECIOUS: $(CWLIB)
 
 # Rule to build JWasm.
@@ -513,7 +518,8 @@ $(CWLIB): $(CWLIBOBJS) $(XLIB)
 	$(GIT) submodule update --init xlib.src
 	cp -a xlib.src xlib.build
 	set -e; \
-	for f1 in xlib.build/xlib/*.[cHP]; do \
+	cd xlib.build/xlib; \
+	for f1 in *.[cHP]; do \
 		f2="`echo "$$f1" | tr ABCDEFGHIJKLMNOPQRSTUVWXYZ \
 				      abcdefghijklmnopqrstuvwxyz`"; \
 		sed -e 's,\.\.\\,../,g' -e '/\/\* STATIC \*\// s,^,//,' \
@@ -526,14 +532,12 @@ $(CWLIB): $(CWLIBOBJS) $(XLIB)
 		    "$$f1" >"$$f2".tmp; \
 		mv "$$f2".tmp "$$f2"; \
 	done
-	$(CC) $(CFLAGS) -DMSDOS \
-	    xlib.build/xlib/allocate.c xlib.build/xlib/args.c \
-	    xlib.build/xlib/dict.c xlib.build/xlib/error.c \
-	    xlib.build/xlib/ext.c xlib.build/xlib/fatal.c \
-	    xlib.build/xlib/hash.c xlib.build/xlib/import.c \
-	    xlib.build/xlib/lib.c xlib.build/xlib/list.c \
-	    xlib.build/xlib/module.c xlib.build/xlib/unmangle.c \
-	    xlib.build/xlib/usage.c xlib.build/xlib/xlib.c -o $@
+	set -e; \
+	cd xlib.build/xlib; \
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -DMSDOS \
+	    allocate.c args.c dict.c error.c ext.c fatal.c hash.c import.c \
+	    lib.c list.c module.c unmangle.c usage.c xlib.c \
+	    -o '$(abspath $@)' $(LDLIBS)
 .PRECIOUS: ./xlib
 
 # Rules to download various programs and disk images for tests.

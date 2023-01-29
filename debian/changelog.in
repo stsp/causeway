@@ -1,3 +1,10 @@
+causeway-dosx (3.72tk-build20230129-2~@distro@) @distro@; urgency=medium
+
+  * Rebuild cw.lib from sources, with the help of David Lindauer's xlib.
+  * Install cwc.exe.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Sun, 29 Jan 2023 15:47:05 +0000
+
 causeway-dosx (3.71tk-build20230122-1~@distro@) @distro@; urgency=medium
 
   * int 0x21, ah = 0x3f or 0x40, now uses ecx if it uses ds:edx.
