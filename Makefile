@@ -315,12 +315,14 @@ define cw-compress
 	    ($(RM) "$4" && exit 1)
 endef
 
+OUTS = cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl cwc.exe
+
 # Various phony targets.
 
-default: cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl cwc.exe
+default: $(OUTS)
 .PHONY: default
 
-install: cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl cwc.exe
+install: $(OUTS)
 	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(bindir2)
 	$(INSTALL) $^ $(DESTDIR)$(bindir)
 	$(RM) -r $(^:%=$(DESTDIR)$(bindir2)/%)
