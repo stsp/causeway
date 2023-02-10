@@ -393,7 +393,7 @@ cw32.exe: $(CWDEPS)
 # build machine.  Meanwhile, UPX yields smaller stubs.
 ifneq "" "$(UPX)"
 cwstub.exe: cw32.exe
-	$(UPX) --8086 -9 -o $@.tmp $<
+	$(UPX) --8086 --no-reloc --all-methods -9 -o $@.tmp $<
 else
 cwstub.exe: cw32.exe cwc-wat
 	./cwc-wat $< $@.tmp
