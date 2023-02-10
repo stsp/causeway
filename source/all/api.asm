@@ -6449,6 +6449,9 @@ _Exec   proc    near
         push    ds
         lds     edx,f[@@Name]
         mov     ax,3d00h                ;open, read only.
+IFDEF CONTRIB
+        and     d[@@LEOff],0
+ENDIF
         int     21h
         pop     ds
         jc      @@no_file_error
@@ -6461,9 +6464,17 @@ _Exec   proc    near
         mov     ecx,2
         mov     ah,3fh
         int     21h
+IFDEF CONTRIB
+        mov     cl,0
+        xchg    d[@@LEOff],ecx
+        jc      @@ReMZ2
+        cmp     al,2
+        jnz     @@ReMZ
+ELSE
         jc      @@file_error
         cmp     ax,cx
         jnz     @@file_error
+ENDIF
         ;
         cmp     w[@@Temp],"ZM"  ;MZ EXE?
         jz      @@MZ
@@ -6478,14 +6489,39 @@ IFDEF LXWORK
         mov     cs:[0],dl
 ENDIF
 
+IFDEF CONTRIB
+@@ReMZ:                         ;if we got here from trying an NE/LE/LX
+        jecxz   @@file_error_2  ;offset (in ecx > 0) --- & there was nothing
+        neg     ecx             ;recognized at that offset --- then
+        add     ecx,2           ;backtrack & try using the MZ length instead
+        cwde
+        sub     ecx,eax
+        mov     dx,cx
+        shr     ecx,16
+        mov     bx,w[@@Handle]
+        mov     ax,4201h
+        int     21h
+        jc      @@file_error
+        jmp     @@MZ3
+@@ReMZ2:
+        xor     ax,ax
+        jmp     @@ReMZ
+@@file_error_2:
+ENDIF
         jmp     @@file_error
         ;
 @@MZ:   ;Look for an LE offset.
         ;
         mov     bx,w[@@Handle]
+IFDEF CONTRIB
+        mov     dx,18h-2
+        xor     cx,cx
+        mov     ax,4201h
+ELSE
         mov     dx,18h
         xor     cx,cx
         mov     ax,4200h
+ENDIF
         int     21h
         mov     edx,offset @@Temp
         mov     ecx,2
@@ -6495,40 +6531,76 @@ ENDIF
         cmp     ax,cx
         jnz     @@file_error
         cmp     w[@@Temp],40h   ;LE offset present?
+IFDEF CONTRIB
+        mov     dx,-1ah+2
+ENDIF
         jnz     @@MZ2
         ;
         ;Fetch the NE/LE/LX offset.
         ;
         mov     bx,w[@@Handle]
+IFDEF CONTRIB
+        mov     dx,3ch-1ah
+        xor     cx,cx
+        mov     ax,4201h
+ELSE
         mov     dx,3ch
         xor     cx,cx
         mov     ax,4200h
+ENDIF
         int     21h
+IFDEF CONTRIB
+        mov     edx,offset @@LEOff
+ELSE
         mov     edx,offset @@Temp
+ENDIF
         mov     ecx,4
         mov     ah,3fh
         int     21h             ;Fetch LE offset.
         jc      @@file_error
         cmp     ax,cx
         jnz     @@file_error
+IFDEF CONTRIB
+        cmp     d[edx],0        ;any offset?
+        mov     dx,-40h+2
+ELSE
         cmp     d[@@Temp],0             ;any offset?
+ENDIF
         jz      @@MZ2
+IFDEF CONTRIB
+        mov     eax,d[@@LEOff]
+ELSE
         mov     eax,d[@@Temp]
+ENDIF
         mov     dx,ax
         shr     eax,16
         mov     cx,ax
         mov     bx,w[@@Handle]
+IFDEF CONTRIB
+        sub     dx,40h
+        sbb     cx,0
+        mov     ax,4201h
+ELSE
         mov     ax,4200h
+ENDIF
         int     21h
         jmp     @@0
         ;
 @@MZ2:  ;Get MZ length and skip it.
         ;
+IFDEF CONTRIB
+        mov     cx,-1
+        mov     ax,4201h
+ELSE
         mov     dx,2
         xor     cx,cx
         mov     ax,4200h
+ENDIF
         mov     bx,w[@@Handle]
         int     21h
+IFDEF CONTRIB
+@@MZ3:
+ENDIF
         mov     edx,offset @@Temp
         mov     ecx,4
         mov     ah,3fh
@@ -6538,6 +6610,10 @@ ENDIF
         cmp     ax,cx
         jnz     @@file_error
         mov     ax,w[@@Temp+2]  ;get length in 512 byte blocks
+IFDEF CONTRIB
+        test    ax,ax
+        jz      @@file_error
+ENDIF
 
 ; MED 04/26/96
         cmp     WORD PTR [@@Temp],0
@@ -6553,9 +6629,17 @@ medexe5:
         mov     al,dh           ;mult by 256=*512
         add     ax,w[@@Temp]            ;add length mod 512
         adc     dx,0            ;add any carry to dx
+IFDEF CONTRIB
+        sub     ax,6
+        sbb     dx,0
+ENDIF
         mov     cx,ax
         xchg    cx,dx           ;swap round for DOS.
+IFDEF CONTRIB
+        mov     ax,4201h
+ELSE
         mov     ax,4200h                ;set absolute position.
+ENDIF
         mov     bx,w[@@Handle]
         int     21h
         jmp     @@0
@@ -6666,6 +6750,9 @@ ENDIF
         dw 0
 @@Temp: ;
         dd 0
+IFDEF CONTRIB
+@@LEOff:
+ENDIF
 @@ExecAdd:      ;
         dd 0
 _Exec   endp

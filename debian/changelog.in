@@ -1,3 +1,11 @@
+causeway-dosx (3.73tk-build20230210-1~@distro@) @distro@; urgency=medium
+
+  * When looking for the protected mode payload, if seeking to the NE/LE/LX
+    offset (.e_lfanew) does not yield a recognized payload format, fall back
+    on seeking to the MZ length (.e_cp, .e_cblp).
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Fri, 10 Feb 2023 17:52:56 +0000
+
 causeway-dosx (3.72tk-build20230129-2~@distro@) @distro@; urgency=medium
 
   * Rebuild cw.lib from sources, with the help of David Lindauer's xlib.
