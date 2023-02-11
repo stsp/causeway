@@ -1,3 +1,9 @@
+causeway-dosx (3.73.01tk-build20230211-1~@distro@) @distro@; urgency=medium
+
+  * Also build an .e_lfanew version of the CauseWay loader stub.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Sat, 11 Feb 2023 06:00:31 +0000
+
 causeway-dosx (3.73tk-build20230210-1~@distro@) @distro@; urgency=medium
 
   * When looking for the protected mode payload, if seeking to the NE/LE/LX

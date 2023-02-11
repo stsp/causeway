@@ -7,3 +7,6 @@
 [submodule "xlib.src"]
 	path = xlib.src
 	url = https://codeberg.org/tkchia/cc386.ladsoft.git
+[submodule "lfanew.src"]
+	path = lfanew.src
+	url = https://codeberg.org/tkchia/lfanew.git

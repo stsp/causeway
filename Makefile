@@ -278,6 +278,12 @@ ifneq "" "$(shell upx -V 2>/dev/null)"
 else
     UPX =
 endif
+ifneq "" "$(shell which lfanew 2>/dev/null)"
+    LFANEW = lfanew
+else
+    LFANEW = ./lfanew
+    CWDEPS += $(LFANEW)
+endif
 RM = rm -f
 
 # If dosemu is installed, then use it to run CauseWay programs.  (Assume
@@ -315,7 +321,7 @@ define cw-compress
 	    ($(RM) "$4" && exit 1)
 endef
 
-OUTS = cwc-wat cw32.exe cwstub.exe cwl.exe cwd.exe cwd.ovl cwc.exe
+OUTS = cwc-wat cw32.exe cwstub.exe cwstubfa.exe cwl.exe cwd.exe cwd.ovl cwc.exe
 
 # Various phony targets.
 
@@ -331,7 +337,8 @@ install: $(OUTS)
 .PHONY: install
 
 clean: mostlyclean
-	$(RM) -r JWasm.build JWlink.build xlib.build jwasm jwlink xlib *.zip
+	$(RM) -r JWasm.build JWlink.build xlib.build jwasm jwlink xlib lfanew \
+		 *.zip
 .PHONY: clean
 
 mostlyclean:
@@ -392,14 +399,21 @@ cw32.exe: $(CWDEPS)
 # Watcom's cwc.c is written in C and thus is usable even on a non-MS-DOS
 # build machine.  Meanwhile, UPX yields smaller stubs.
 ifneq "" "$(UPX)"
-cwstub.exe: cw32.exe
+cwstub.exe: cw32.exe $(CWDEPS)
 	$(UPX) --8086 --no-reloc --all-methods -9 -o $@.tmp $<
 else
-cwstub.exe: cw32.exe cwc-wat
+cwstub.exe: cw32.exe cwc-wat $(CWDEPS)
 	./cwc-wat $< $@.tmp
 endif
 	mv $@.tmp $@
 .PRECIOUS: cwstub.exe
+
+# Rule to transform a compressed CauseWay loader stub into one which has a
+# .e_lfanew field in its MZ header.  This may be useful for some purposes.
+cwstubfa.exe: cwstub.exe $(CWDEPS)
+	$(LFANEW) -o $@.tmp $<
+	mv $@.tmp $@
+.PRECIOUS: cwstubfa.exe
 
 # Rules to build the CauseWay linker.  Use JWlink or wlink to build a
 # stage-1 linker (cwl-pre.exe) which will contain a Linear Executable (LE)
@@ -541,6 +555,15 @@ $(CWLIB): $(CWLIBOBJS)
 	    lib.c list.c module.c unmangle.c usage.c xlib.c \
 	    -o '$(abspath $@)' $(LDLIBS)
 .PRECIOUS: ./xlib
+
+# Rule to build lfanew.
+./lfanew:
+	$(RM) -r lfanew.build
+	mkdir lfanew.build
+	cd lfanew.build && ../lfanew.src/configure
+	$(MAKE) -C lfanew.build
+	cp lfanew.build/lfanew $@
+.PRECIOUS: ./lfanew
 
 # Rules to download various programs and disk images for tests.
 
