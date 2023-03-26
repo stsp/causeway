@@ -166,9 +166,15 @@ cwAPIpatch      proc    near
         db 66h
 @@n32:  jmp     cs:f[OldIntSys] ;pass it onto previous handler.
         assume ds:_apiCode
+IFDEF CONTRIB
+        even
+ENDIF
 ;
 OldIntSys       df 0
 ;
+IFDEF CONTRIB
+        align 4
+ENDIF
 APICallTable    dd cwAPI_Info           ;00
         dd cwAPI_IntXX          ;01
         dd cwAPI_FarCallReal    ;02
@@ -2645,6 +2651,9 @@ _SetSelector    proc near
 @@9:    stc
 @@10:   popm    eax,ecx,edx,esi,edi,ebp,ds,es,fs,gs
         ret
+IFDEF CONTRIB
+        align 4
+ENDIF
 @@SelectorBase: ;
         dd ?
 @@SelectorSize: ;
@@ -2788,6 +2797,9 @@ _SizeSelector   proc near
 @@9:    stc
 @@10:   popm    eax,ebx,ecx,edx,esi,edi,ebp,ds,es,fs,gs
         ret
+IFDEF CONTRIB
+        align 4
+ENDIF
 @@SelectorBase: ;
         dd ?
 @@SelectorSize: ;
@@ -3837,6 +3849,9 @@ _GetMemory      proc    near
 @@10:   popm    d[@@BlockSize],d[@@BlockBase],d[@@BlockHandle]
         popm    ecx,edx,edi,ebp,ds,es
         ret
+IFDEF CONTRIB
+        align 4
+ENDIF
 @@BlockBase:    ;
         dd ?
 @@BlockHandle:  ;
@@ -3940,6 +3955,9 @@ END COMMENT !
         ;
 @@exit: pop     ds
         ret
+IFDEF CONTRIB
+        align 4
+ENDIF
 @@dpmembuff:    ;
         db 30h dup (0)
 _GetMemoryMax   endp
@@ -4012,6 +4030,9 @@ _ResMemory      proc    near
         pop     d[@@OldESI]
         popm    eax,ebx,ecx,edx,edi,ebp,ds,es
         ret
+IFDEF CONTRIB
+        align 4
+ENDIF
 @@OldEBX:       ;
         dd 0
 @@OldESI:       ;
@@ -5288,6 +5309,9 @@ CreatePSP       proc    near
         popm    ds,es,fs,gs
         ret
 ;
+IFDEF CONTRIB
+        even
+ENDIF
 @@PSP:  ;
         dw 0
 @@Command:      ;
@@ -5347,6 +5371,9 @@ DeletePSP       proc    near
         popm    ds,es,fs,gs
         ret
 ;
+IFDEF CONTRIB
+        even
+ENDIF
 @@PSP:  ;
         dw ?
 @@Flags:        ;
@@ -6167,6 +6194,9 @@ medle1:
         popm    ds,es
         ret
 ;
+IFDEF CONTRIB
+        align 4
+ENDIF
 @@ID:   ;
         db 256 dup (0)
 @@Handle:       ;
@@ -6187,6 +6217,9 @@ medle1:
         db ".DLL"
         db ".EXE"
         db 0
+IFDEF CONTRIB
+        align 4
+ENDIF
 ; temporary DTA storage so PSP isn't munged, MED 01/03/96
 TemporaryDTA    DB      80h DUP (?)
 EntryDTAAddress DF      0       ; Entry DTA address
@@ -6738,6 +6771,9 @@ ENDIF
         stc
         jmp     @@exit
 ;
+IFDEF CONTRIB
+        align 4
+ENDIF
 @@Name: ;
         df 0
 @@Flags:        ;
@@ -7987,6 +8023,9 @@ medexe3:
         stc
         jmp     @@error
 ;
+IFDEF CONTRIB
+        even
+ENDIF
 @@Name: ;
         df 0,0
 @@Environment:  ;
@@ -8240,6 +8279,9 @@ ExecModule      proc    near
         popm    ds,es
         ret
 ;
+IFDEF CONTRIB
+        even
+ENDIF
 @@OldInt21h:    ;
         df 0,0
 @@errorcode:    ;
@@ -8606,6 +8648,9 @@ CtrlBrkEvent    proc    far
 @@Use32Bit2:    ;
         iretd
 ;
+IFDEF CONTRIB
+        even
+ENDIF
 OldInt1bh       dd 0
 Int1bhcall      dd 0
 CtrlBrkEventTab db size RealRegsStruc dup (0)
@@ -8646,6 +8691,9 @@ Int1bHandler    proc    far
 @@0:    iretd
         assume ds:_apiCode
 ;
+IFDEF CONTRIB
+        even
+ENDIF
 OldInt1BhP      df 0
 Int1bRegs       db size RealRegsStruc dup (0)
 Int1bHandler    endp
@@ -8664,6 +8712,9 @@ Int23Handler    proc    near
         sti
         jmp     f[TerminationHandler]
         assume ds:_apiCode
+IFDEF CONTRIB
+        even
+ENDIF
 OldInt23        df 0
 Int23Handler    endp
 
@@ -8710,6 +8761,9 @@ Int24Handler    proc    near
         jmp     f[TerminationHandler]
         assume ds:_apiCode
 ;
+IFDEF CONTRIB
+        even
+ENDIF
 OldInt24        df 0
 CriticalPrompt  db 13,10,'Critical Error: Abort, Retry, Ignore, Fail? $'
 CriticalKeys    db 'aArRiIfF'

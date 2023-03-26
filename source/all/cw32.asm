@@ -41,7 +41,7 @@ Copyright       label byte
 VersionMajor    db '3.'
 IFDEF CONTRIB
 VersionMinor    db '73.'
-VersionPatchLevel db '01'               ;for changes that do not affect API.
+VersionPatchLevel db '02'               ;for changes that do not affect API.
 VersionDevelFork db 'tk'
 ELSE
 VersionMinor    db '60'
@@ -491,6 +491,9 @@ Int21hExecPatch proc    near
 @@Old:
         popf
         jmp     cs:d[OldInt21hExec]
+IFDEF CONTRIB
+        even
+ENDIF
 OldInt21hExec   dd 0
         assume ds:_cwMain
 Int21hExecCount db 0
@@ -3479,12 +3482,18 @@ END COMMENT !
 
         .286
 
+IFDEF CONTRIB
+        even
+ENDIF
 @@OldStrat:     ;
         dw ?,?
 
 @@NumXMSHandles:
         db ?
 
+IFDEF CONTRIB
+        align 4
+ENDIF
 ; MED, 09/10/99, increase max XMS size to dword
 @@XMSSize:      ;
 ;       dw ?

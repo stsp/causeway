@@ -157,6 +157,9 @@ ExcepClose      proc    near
         int     31h
         ret
         ;
+IFDEF CONTRIB
+        even
+ENDIF
 OldExc00        df 0
 OldExc01        df 0
 OldExc02        df 0
@@ -230,6 +233,9 @@ Int00Handler    proc    near
         sti
         jmp     f[TerminationHandler]
         assume ds:_Excep
+IFDEF CONTRIB
+        even
+ENDIF
 OldInt00        df 0
 Int00Handler    endp
 
@@ -2363,6 +2369,9 @@ ebpdump:
 
 @@9:    pop     ds
         retf
+IFDEF CONTRIB
+        align 4
+ENDIF
 @@Handle:       ;
         dd ?
 DebugDisplay    endp

@@ -344,7 +344,9 @@ clean: mostlyclean
 mostlyclean:
 	$(RM) -r *.o *.obj *.exe *.com *.ovl *.lib *.gh *.map *.sym *.lst \
 		 *.err *.3p *.tmp mkcode cwc-wat copystub.inc decstub.inc \
-		 tests/tmp *~ source/all/*~ source/all/*/*.o source/all/*/*~
+		 tests/tmp source/all/*/*.o \
+		 source/all/*/*/*.lst source/all/*/*/*.o
+	find . -name '*~' -exec $(RM) '{}' ';'
 .PHONY: mostlyclean
 
 check: cwl.exe FD12FLOPPY.zip csdpmi7b.zip dual.exe tests/autoexec.bat

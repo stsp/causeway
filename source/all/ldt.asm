@@ -223,6 +223,9 @@ RawReal2ProtSel proc    near
 @@Done: clc
 @@9:    popm    ebx,ecx,edx,esi,edi,ds
         ret
+IFDEF CONTRIB
+        even
+ENDIF
 Real2ProtList   dw 128 dup (0)
 RawReal2ProtSel endp
 

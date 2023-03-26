@@ -3,6 +3,9 @@
 ;Protected mode interrupt/exception handlers.
 ;
 
+IFDEF CONTRIB
+        align 8
+ENDIF
 ;-------------------------------------------------------------------------------
 ;
 ;Generate the initial entry points for the interupt handlers.
@@ -1252,6 +1255,9 @@ IntDispatch     proc    near
         popm    eax,ebx,ds
         iretd
         ;
+IFDEf CONTRIB
+        even
+ENDIF
 @@Call2 df 0,0
 @@Call20        df 0,0
 IntDispatch     endp

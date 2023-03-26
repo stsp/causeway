@@ -1,3 +1,9 @@
+causeway-dosx (3.73.02tk-build20230326-1~@distro@) @distro@; urgency=medium
+
+  * Align some internal variables to word, dword, or qword boundaries.
+
+ -- TK Chia <tkchia@users.noreply.github.com>  Sun, 26 Mar 2023 17:20:58 +0000
+
 causeway-dosx (3.73.01tk-build20230211-1~@distro@) @distro@; urgency=medium
 
   * Also build an .e_lfanew version of the CauseWay loader stub.
