@@ -1,0 +1,45 @@
+# Copyright (c) 2023 TK Chia
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# Configuration file for AppVeyor (https://ci.appveyor.com/) Continuous
+# Integration.
+
+image: Ubuntu2004
+install: 
+  - sudo apt-get install -y software-properties-common
+  # "E: Repository 'http://ppa.launchpad.net/rabbitmq/rabbitmq-erlang/ubuntu
+  #  focal InRelease' changed its 'Label' value from 'Modern Erlang packages
+  #  for Ubuntu and Debian' to 'Latest (26.x) Erlang packages for Ubuntu and
+  #  Debian'
+  # "N: This must be accepted explicitly before updates for this repository
+  #  can be applied. See apt-secure(8) manpage for details."
+  - sudo add-apt-repository -r -y ppa:rabbitmq/rabbitmq-erlang
+  # The Mono apt repository does not cause any problems with `apt-get update`,
+  # but we do not really need it anyway...
+  - sudo add-apt-repository -r -y
+    http://download.mono-project.com/repo/ubuntu
+  - sudo add-apt-repository -y ppa:tkchia/de-rebus
+  - sudo apt-get update -y
+  - sudo apt-get install -y gcc jwasm jwlink xlib.ladsoft lfanew make dosbox
+    wget unzip mtools qemu-system-x86
+build_script:
+  - make
+test_script:
+  - make check

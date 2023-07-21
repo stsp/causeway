@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/nyffmqwxsxs8xry0/branch/master)](https://ci.appveyor.com/project/tkchia/causeway/branch/master)
+
 Attempt to update Devore's CauseWay DOS extender for modern build systems, and to improve on it.
 
 To build:
