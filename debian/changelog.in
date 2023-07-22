@@ -1,10 +1,11 @@
-causeway-dosx (3.73.02tk-build20230722-2~@distro@) @distro@; urgency=medium
+causeway-dosx (3.73.03tk-build20230722-2~@distro@) @distro@; urgency=medium
 
-  * Bump version of lfanew internal tool used during build.
+  * Use Git submodule version of lfanew; remove dependency on apt-get version.
   * Build only for i386 and/or x86-64 hosts for now, since jwlink is only
     known to build properly on these platforms at the moment.
+  * Fix `make clean`.
 
- -- TK Chia <tkchia@users.noreply.github.com>  Sat, 22 Jul 2023 16:45:39 +0000
+ -- TK Chia <tkchia@users.noreply.github.com>  Sat, 22 Jul 2023 21:11:42 +0000
 
 causeway-dosx (3.73.02tk-build20230326-1~@distro@) @distro@; urgency=medium
 

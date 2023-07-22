@@ -36,8 +36,8 @@ test:
     - add-apt-repository -y ppa:tkchia/de-rebus
     - apt-get update -y
     - >
-        apt-get install -y gcc jwasm jwlink xlib.ladsoft lfanew make dosbox
-        wget unzip mtools qemu-system-x86
+        apt-get install -y gcc jwasm jwlink xlib.ladsoft make dosbox wget
+        unzip mtools qemu-system-x86
   script:
     - make
     - make check

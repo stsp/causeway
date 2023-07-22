@@ -520,7 +520,7 @@ $(CWLIB): $(CWLIBOBJS)
 	fi)
 ./jwlink:
 	$(RM) -r JWlink.build
-	$(GIT) submodule update --init JWlink.src
+	-$(GIT) submodule update --init JWlink.src
 	cp -a JWlink.src JWlink.build
 	$(MAKE) -C JWlink.build/dwarf/dw -f GccUnix.mak
 	$(MAKE) -C JWlink.build/orl -f GccUnix.mak
@@ -533,7 +533,7 @@ $(CWLIB): $(CWLIBOBJS)
 # Rule to patch & build David Lindauer's xlib.
 ./xlib:
 	$(RM) -r xlib.build xlib.zip
-	$(GIT) submodule update --init xlib.src
+	-$(GIT) submodule update --init xlib.src
 	cp -a xlib.src xlib.build
 	set -e; \
 	cd xlib.build/xlib; \
@@ -561,6 +561,7 @@ $(CWLIB): $(CWLIBOBJS)
 # Rule to build lfanew.
 ./lfanew:
 	$(RM) -r lfanew.build
+	-$(GIT) submodule update --init lfanew.src
 	mkdir lfanew.build
 	cd lfanew.build && ../lfanew.src/configure
 	$(MAKE) -C lfanew.build

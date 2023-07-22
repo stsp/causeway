@@ -21,6 +21,7 @@
 # Configuration file for AppVeyor (https://ci.appveyor.com/) Continuous
 # Integration.
 
+skip_tags: true
 image: Ubuntu2004
 install: 
   - sudo apt-get install -y software-properties-common
@@ -37,8 +38,8 @@ install:
     http://download.mono-project.com/repo/ubuntu
   - sudo add-apt-repository -y ppa:tkchia/de-rebus
   - sudo apt-get update -y
-  - sudo apt-get install -y gcc jwasm jwlink xlib.ladsoft lfanew make dosbox
-    wget unzip mtools qemu-system-x86
+  - sudo apt-get install -y gcc jwasm jwlink xlib.ladsoft make dosbox wget
+    unzip mtools qemu-system-x86
 build_script:
   - make
 test_script:
