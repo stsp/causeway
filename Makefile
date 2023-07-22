@@ -337,8 +337,8 @@ install: $(OUTS)
 .PHONY: install
 
 clean: mostlyclean
-	$(RM) -r JWasm.build JWlink.build xlib.build jwasm jwlink xlib lfanew \
-		 *.zip
+	$(RM) -r JWasm.build JWlink.build xlib.build lfanew.build jwasm \
+		 jwlink xlib lfanew *.zip
 .PHONY: clean
 
 mostlyclean:

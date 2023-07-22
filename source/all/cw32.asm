@@ -41,7 +41,7 @@ Copyright       label byte
 VersionMajor    db '3.'
 IFDEF CONTRIB
 VersionMinor    db '73.'
-VersionPatchLevel db '02'               ;for changes that do not affect API.
+VersionPatchLevel db '03'               ;for changes that do not affect API.
 VersionDevelFork db 'tk'
 ELSE
 VersionMinor    db '60'
