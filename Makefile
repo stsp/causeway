@@ -291,7 +291,7 @@ RM = rm -f
 #
 # In the future it might be useful to have some sort of loader that can
 # directly launch protected mode code from U*ix systems.
-ifneq "" "$(shell dosemu --version)"
+ifneq "" "$(shell dosemu --version 2>/dev/null)"
     run-dos = TERM=vt220 dosemu -td -K . -E "$1"
 else
     run-dos = TERM=vt220 dosbox -c 'mount c .' -c 'c:' -c "$1" -c exit \

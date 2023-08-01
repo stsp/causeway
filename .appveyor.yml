@@ -39,7 +39,7 @@ install:
   - sudo add-apt-repository -y ppa:tkchia/de-rebus
   - sudo apt-get update -y
   - sudo apt-get install -y gcc jwasm jwlink xlib.ladsoft make dosbox wget
-    unzip mtools qemu-system-x86
+    unzip mtools qemu-system-x86 git
 build_script:
   - make
 test_script:

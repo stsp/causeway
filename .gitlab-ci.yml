@@ -37,7 +37,7 @@ test:
     - apt-get update -y
     - >
         apt-get install -y gcc jwasm jwlink xlib.ladsoft make dosbox wget
-        unzip mtools qemu-system-x86
+        unzip mtools qemu-system-x86 git
   script:
     - make
     - make check
