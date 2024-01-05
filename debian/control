@@ -3,7 +3,7 @@ Section: devel
 Priority: optional
 Maintainer: TK Chia <tkchia@users.noreply.github.com>
 Build-Depends: debhelper (>= 9), quilt, gcc (>= 4.5), libc6-dev (>= 2), jwasm,
- jwlink, upx-ucl, xlib.ladsoft, dosbox, git
+ jwlink, upx-ucl, xlib.ladsoft, lfanew
 Standards-Version: 3.9.6
 Homepage: https://github.com/tkchia/causeway
 
